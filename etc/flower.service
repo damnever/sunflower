@@ -1,0 +1,14 @@
+[Unit]
+Description=Sunflower Client
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/srv/sunflower
+ExecStart=/srv/sunflower/flower -config=client.config.yaml
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
