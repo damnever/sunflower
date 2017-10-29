@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+package msgpb;
+
+// nested types is ugly..
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.goproto_enum_prefix_all) = false;
+
+
+enum ErrCode {
+    ErrCodeNull = 0;
+    ErrCodeBadClient = 1;
+    ErrCodeBadVersion = 2;
+    ErrCodeBadProtoOrAddr = 3;
+    ErrCodeBadRegistryAddr = 4;
+    ErrCodeNoSuchTunnel = 5;
+    ErrCodeDuplicateAgent = 6;
+    ErrCodeInternalServerError = 7;
+}
+
+// client <-> server
+// - control
+message HandshakeRequest {
+    string id = 1 [(gogoproto.customname) = "ID"];
+    string hash = 2;
+    string version = 3;
+    string device = 4;
+}
+
+message HandshakeResponse {
+    ErrCode err_code = 1;
+}
+
+message PingRequest {}
+
+message PingResponse {}
+
+// - exchange data
+message TunnelHandshakeRequest {
+    string id = 1 [(gogoproto.customname) = "ID"];
+    string client_hash = 2;
+    string tunnel_hash = 3;
+}
+
+message TunnelHandshakeResponse {
+    ErrCode err_code = 1;
+}
+
+
+// server <-> client
+message NewTunnelRequest {
+    string id = 1 [(gogoproto.customname) = "ID"];
+    string client_hash = 2;
+    string tunnel_hash = 3;
+    string proto = 4;
+    string export_addr = 5;
+    string registry_addr = 6;
+}
+
+message NewTunnelResponse {
+    string tunnel_hash = 1;
+    ErrCode err_code = 2;
+}
+
+message CloseTunnelRequest {
+    string id = 1 [(gogoproto.customname) = "ID"];
+    string client_hash = 2;
+    string tunnel_hash = 3;
+}
+
+message CloseTunnelResponse {
+    string tunnel_hash = 1;
+    ErrCode err_code = 2;
+}
+
+message ShutdownRequest {
+    string id = 1 [(gogoproto.customname) = "ID"];
+    string client_hash = 2;
+    string tunnel_hash = 3;
+}
+
+
+message Message {
+    oneof body {
+        HandshakeRequest handshake_request = 1;
+        HandshakeResponse handshake_response = 2;
+        TunnelHandshakeRequest tunnel_handshake_request = 3;
+        TunnelHandshakeResponse tunnel_handshake_response = 4;
+        PingRequest ping_request = 5;
+        PingResponse ping_response = 6;
+        NewTunnelRequest new_tunnel_request = 7;
+        NewTunnelResponse new_tunnel_response = 8;
+        CloseTunnelRequest close_tunnel_request = 9;
+        CloseTunnelResponse close_tunnel_response = 10;
+        ShutdownRequest shutdown_request = 11;
+    }
+}
+
+
+/*
+GRPC is not a good choice for bidirectional RPC on one connection,
+which both side can act as client and server.
+
+service Controller {
+}
+*/
