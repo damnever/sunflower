@@ -137,7 +137,7 @@ func makeFlower(ctx context.Context, p platform) error {
 		os.Environ(),
 		"GOPATH="+goPath,
 		"GOOS="+p.GOOS,
-		"GOARCH"+p.GOARCH,
+		"GOARCH="+p.GOARCH,
 	)
 	if p.GOARM != "" {
 		cmd.Env = append(cmd.Env, "GOARM="+p.GOARM)
