@@ -63,7 +63,7 @@ func BuildWebConfig(rawConf cc.Configer) *web.Config {
 	conf := &web.Config{}
 	conf.Addr = rawConf.String("addr")
 	conf.MuxDomain = rawConf.String("mux_domain")
-	conf.HostIP = rawConf.String("host_ip")
+	conf.HostIP = rawConf.String("host_ip") // proxy ip
 	if conf.HostIP == "" {
 		conf.HostIP, _ = util.HostIP()
 	}

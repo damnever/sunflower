@@ -28,7 +28,11 @@ type TCPTunnelRegistry struct {
 }
 
 func New(domain string, addr string, timeout util.TimeoutConfig) (*TCPTunnelRegistry, error) {
-	ln, err := net.Listen("tcp", "0.0.0.0:0")
+	ip, err := util.HostIP()
+	if err != nil {
+		return nil, err
+	}
+	ln, err := net.Listen("tcp", fmt.Sprintf("%s:0", ip))
 	if err != nil {
 		return nil, err
 	}
