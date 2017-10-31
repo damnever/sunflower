@@ -1,26 +1,26 @@
 debug_addr: localhost:22223
 
-storage:
-    datadir: ./data
+# Storage directory
+datadir: ./data
 
-core: # registry, tunnel management, etc.
-    addr: :8888
-    http:
-        domain: sunflower.test # if not provide, subdomain feature is disabled
-        addr: :8787
-
+domain: sunflower.test # if not provide, subdomain feature is disabled
+# proxy_ip:  # set it if you have a proxy in front of your server
+graceful_shutdown: 3 # sec
+control: # ms
+    addr: :8888 # listen for agent connections
     timeout:
-        graceful_shutdown: 3 # sec
-        contol: # ms
-            read: 10000
-            write: 1000
-        tunnel: # ms
-            read: 5000
-            write: 1000
+        read: 10000 # ms
+        write: 1000 # ms
+muxreg:
+    http_addr: localhost:8787 # listen for subdomain connections, ignored if domain not provide
+    timeout: # ms
+        read: 5000
+        write: 1000
 
-web: # control panel
+
+# Control panel
+web:
     addr: localhost:5920
-    mux_domain: sunflower.test # same as core.domain
     allow_origins:
         - sunflower.test
     max_admin_agents: 23
@@ -29,22 +29,22 @@ web: # control panel
     max_user_tunnels: 10
     max_tunnel_updates_per_hour: 12
     max_downloads_per_hour: 8
-    client_config: |
-      control_server: :8888 # smae as the core.addr
-      debug_addr: localhost:22222
-      heartbeat_interval: 3  # sec
-      timeout:
-          graceful_shutdown: 3 # sec
-          control: # ms
-              connect: 5000
-              read: 10000
-              write: 1000
-          tunnel: # ms
-              connect: 5000
-              read: 5000
-              write: 1000
-          local: # ms
-              connect: 1000
-      retry:
-          backoff: 500 # ms
-          max: 10
+    # Agent config
+    agent_config: |
+        debug_addr: 0.0.0.0:22222
+        heartbeat_interval: 3  # sec
+        timeout:
+            graceful_shutdown: 3 # sec
+            control: # ms
+                connect: 5000
+                read: 10000
+                write: 1000
+            tunnel: # ms
+                connect: 5000
+                read: 5000
+                write: 1000
+            local: # ms
+                connect: 1000
+        retry:
+            backoff: 300 # ms
+            max: 10

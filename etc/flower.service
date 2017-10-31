@@ -7,7 +7,7 @@ Type=simple
 User=www-data
 Group=www-data
 WorkingDirectory=/srv/sunflower
-ExecStart=/srv/sunflower/flower -config=client.config.yaml
+ExecStart=/srv/sunflower/flower
 Restart=always
 
 [Install]
