@@ -2,15 +2,14 @@
   <div>
     <el-row>
       <el-col :span="6">
-        <el-input placeholder="Please input tag" icon="search"
-          class="hundred-width" size="small"
-          v-model="qtag" :on-icon-click="searchTag">
+        <el-input placeholder="Please input tag" prefix-icon="el-icon-search"
+          class="hundred-width" size="small" v-model="qtag">
         </el-input>
       </el-col>
       <el-col :span="2":offset="16">
-        <el-button :plain="true" size="small" type="info" icon="plus"
+        <el-button size="small" icon="el-icon-plus"
           @click="showAddDialog = true"
-          class="hundred-width">
+          class="hundred-width" round>
         </el-button>
       </el-col>
     </el-row>
@@ -31,7 +30,7 @@
       <el-table-column prop="tag" label="tag" sortable>
       </el-table-column>
       <el-table-column label="action" fixed="right" width="200px">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button @click="deleteAgent(scope.row)"
             type="text" size="small">delete
           </el-button>
@@ -46,7 +45,7 @@
     </el-table>
 
     <el-dialog title="Create a New Agent" :visible.sync="showAddDialog"
-      size="tiny" :before-close="closeAddDialog">
+      width="30%" :before-close="closeAddDialog">
       <el-form :model="addForm" label-position="right">
         <el-form-item label="Tag" label-width="60px">
           <el-input v-model="addForm.tag" auto-complete="off" size="small"
@@ -61,7 +60,7 @@
     </el-dialog>
 
     <el-dialog :title="'Download Agent #' + dlAgentHash" :visible.sync="showDlDialog"
-      size="tiny" :before-close="closeDlDialog">
+      width="30%" :before-close="closeDlDialog">
       <el-form :model="dlForm" label-position="right">
         <el-form-item label="OS" label-width="100px">
           <el-select v-model="dlForm.GOOS" auto-complete="off" size="small">

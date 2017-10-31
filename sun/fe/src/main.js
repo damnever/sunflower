@@ -1,14 +1,15 @@
-require('element-ui/lib/theme-default/index.css')
 require('./assets/css/style.css')
 require('./assets/icons/favicon.ico')
 
 import Vue from 'vue'
+
 Vue.config.errorHandler = (err, vm) => {
   console.log(err, vm)
 }
 
 import ElementUI from 'element-ui'
 import VueResource from 'vue-resource'
+import 'element-ui/lib/theme-chalk/index.css'
 import App from './App.vue'
 import router from './router'
 

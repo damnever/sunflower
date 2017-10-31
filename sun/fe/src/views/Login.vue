@@ -11,7 +11,7 @@
     </el-row>
     <el-row>
       <el-col :span="6" :offset="9">
-        <el-form label-position="right" label-width="80px" :model="form" class="hundred-width top-margin">
+        <el-form label-position="left" label-width="80px" :model="form" class="hundred-width top-margin">
           <el-form-item label="Username">
             <el-input v-model="form.username" size="small"></el-input>
           </el-form-item>
@@ -19,7 +19,7 @@
             <el-input @keyup.native.enter="login" v-model="form.password" type="password" size="small"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button @click="login" :plain="true" type="info">Login</el-button>
+            <el-button @click="login" :plain="true" round>Login</el-button>
           </el-form-item>
         </el-form>
       </el-col>

@@ -2,15 +2,16 @@
   <div>
     <el-row>
       <el-col :span="6">
-        <el-input placeholder="Please input the username" icon="search"
+        <el-input placeholder="Please input the username"
+          prefix-icon="el-icon-search"
           class="hundred-width" size="small"
-          v-model="qusername" :on-icon-click="searchUser">
+          v-model="qusername">
         </el-input>
       </el-col>
       <el-col :span="2" :offset="16">
-        <el-button :plain="true" size="small" type="info" icon="plus"
+        <el-button size="small" icon="el-icon-plus"
           @click="showDialog = true"
-          class="hundred-width">
+          class="hundred-width" round>
         </el-button>
       </el-col>
     </el-row>
@@ -21,7 +22,7 @@
       <el-table-column prop="email" label="e-mail" sortable>
       </el-table-column>
       <el-table-column label="admin" sortable>
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tag :type="scope.row.is_admin ? 'danger' : 'gray'">
             {{ scope.row.is_admin }}
           </el-tag>
@@ -30,7 +31,7 @@
       <el-table-column prop="created_at" label="created" sortable>
       </el-table-column>
       <el-table-column label="action">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button @click.native.prevent="deleteUser(scope.row)"
             type="text" size="small" :disabled="scope.row.is_admin">delete
           </el-button>
@@ -39,7 +40,7 @@
     </el-table>
 
     <el-dialog title="Create a New User" :visible.sync="showDialog"
-      size="tiny" :before-close="closeCreateUserDialog">
+      width="30%" :before-close="closeCreateUserDialog">
       <el-form :model="form" label-position="right">
         <el-form-item label="Username" label-width="80px">
           <el-input v-model="form.username" auto-complete="off" size="small">

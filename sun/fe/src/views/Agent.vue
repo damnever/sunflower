@@ -2,15 +2,14 @@
   <div>
     <el-row>
       <el-col :span="6">
-        <el-input placeholder="Please input tag" icon="search"
-          class="hundred-width" size="small"
-          v-model="qtag" :on-icon-click="searchTag">
+        <el-input placeholder="Please input tag" prefix-icon="el-icon-search"
+          class="hundred-width" size="small" v-model="qtag">
         </el-input>
       </el-col>
       <el-col :span="2" :offset="16">
-        <el-button :plain="true" size="small" type="info" icon="plus"
+        <el-button size="small" icon="el-icon-plus"
           @click="showDialog = true"
-          class="hundred-width">
+          class="hundred-width" round>
         </el-button>
       </el-col>
     </el-row>
@@ -19,7 +18,7 @@
       <el-table-column prop="hash" label="id" sortable>
       </el-table-column>
       <el-table-column prop="proto" label="protocol" sortable>
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tag :type="scope.row.proto === 'TCP' ? 'primary' : 'success'">
             {{ scope.row.proto }}
           </el-tag>
@@ -29,7 +28,7 @@
       </el-table-column>
       <el-table-column prop="server_addr" label="server address" sortable>
         <!-- TODO -->
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" placement="top-start">
             <div slot="content">
               Copy manually.. {{ scope.row.server_addr.replace("0.0.0.0", config.ip) }}<span v-if="scope.row.proto === 'HTTP'">.{{ config.domain }}</span>
@@ -47,7 +46,7 @@
       <el-table-column prop="traffic_out" label="out" sortable>
       </el-table-column>
       <el-table-column prop="enabled" label="enabled">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-switch v-model="scope.row.enabled"
             @change="enableTunnel(scope.row.hash, scope.row.enabled)">
           </el-switch>
@@ -56,7 +55,7 @@
       <el-table-column prop="tag" label="tag" sortable>
       </el-table-column>
       <el-table-column label="action" fixed="right" width="120px">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button @click="deleteTunnel(scope.row)"
             type="text" size="small">delete
           </el-button>
@@ -68,7 +67,7 @@
     </el-table>
 
     <el-dialog title="Create a New Tunnel" :visible.sync="showDialog"
-      size="small" :before-close="closeDialog">
+      width="50%" :before-close="closeDialog">
       <el-row>
       <el-col :span="20" :offset="2">
         <el-form :model="form" label-position="right">
