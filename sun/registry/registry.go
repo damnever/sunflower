@@ -16,6 +16,13 @@ import (
 	"github.com/damnever/sunflower/sun/tracker"
 )
 
+type Config struct {
+	IP       string
+	Domain   string
+	HTTPAddr string
+	Timeout  util.TimeoutConfig
+}
+
 type TCPTunnelRegistry struct {
 	sync.RWMutex
 	sync.WaitGroup
@@ -23,39 +30,46 @@ type TCPTunnelRegistry struct {
 	logger    *zap.SugaredLogger
 	timeout   util.TimeoutConfig
 	tunneln   net.Listener
+	tlnAddr   string
 	httpmuxer *HTTPTunnelMuxer
 	tunnels   map[string]map[string]Tunnel
 }
 
-func New(domain string, addr string, timeout util.TimeoutConfig) (*TCPTunnelRegistry, error) {
-	ip, err := util.HostIP()
-	if err != nil {
-		return nil, err
-	}
-	ln, err := net.Listen("tcp", fmt.Sprintf("%s:0", ip))
+func New(conf Config) (*TCPTunnelRegistry, error) {
+	ln, err := net.Listen("tcp", "0.0.0.0:0")
 	if err != nil {
 		return nil, err
 	}
 
 	var muxer *HTTPTunnelMuxer
-	if domain != "" {
-		if muxer, err = NewHTTPTunnelMuxer(domain, addr); err != nil {
+	if conf.Domain != "" {
+		if muxer, err = NewHTTPTunnelMuxer(conf.Domain, conf.HTTPAddr); err != nil {
 			ln.Close()
 			return nil, err
 		}
 	}
 
+	_, port, err := net.SplitHostPort(ln.Addr().String())
+	if err != nil {
+		ln.Close()
+		if muxer != nil {
+			muxer.Close()
+		}
+		return nil, err
+	}
+	lnAddr := fmt.Sprintf("%s:%s", conf.IP, port)
 	return &TCPTunnelRegistry{
-		timeout:   timeout,
+		timeout:   conf.Timeout,
 		logger:    log.New("reg[tcp]"),
 		tunneln:   ln,
+		tlnAddr:   lnAddr,
 		httpmuxer: muxer,
 		tunnels:   map[string]map[string]Tunnel{},
 	}, nil
 }
 
 func (tr *TCPTunnelRegistry) ListenAddr() string {
-	return tr.tunneln.Addr().String()
+	return tr.tlnAddr
 }
 
 func (tr *TCPTunnelRegistry) Serve() error {

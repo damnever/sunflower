@@ -34,7 +34,7 @@ type Config struct {
 	MuxDomain              string
 	AllowOrigins           []string
 	HostIP                 string
-	ClientConfig           string
+	AgentConfig            string
 	MaxAdminAgents         int
 	MaxAdminTunnels        int
 	MaxUserAgents          int
@@ -54,7 +54,7 @@ type Server struct {
 }
 
 func New(conf *Config, db *storage.DB, pub pubsub.Publisher) (*Server, error) {
-	builder, err := NewBuilder(conf.ClientConfig)
+	builder, err := NewBuilder(conf.AgentConfig)
 	if err != nil {
 		return nil, err
 	}

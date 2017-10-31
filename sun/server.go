@@ -20,34 +20,36 @@ import (
 
 type CtlServer struct {
 	sync.Mutex
-	conf    *Config
-	logger  *zap.SugaredLogger
-	server  *birpc.Server
-	db      *storage.DB
-	reg     *registry.TCPTunnelRegistry
-	sub     pubsub.Subscriber
-	filter  map[string]bool
-	done    chan struct{}
-	tracker *tracker.Tracker
+	logger           *zap.SugaredLogger
+	server           *birpc.Server
+	db               *storage.DB
+	reg              *registry.TCPTunnelRegistry
+	sub              pubsub.Subscriber
+	filter           map[string]bool
+	done             chan struct{}
+	tracker          *tracker.Tracker
+	gracefulShutdown time.Duration
 }
 
-func NewCtlServer(conf *Config, sub pubsub.Subscriber, db *storage.DB) (*CtlServer, error) {
-	reg, err := registry.New(conf.HTTP.Domain, conf.HTTP.Addr, conf.Timeout.Tunnel)
+func NewCtlServer(conf Config, sub pubsub.Subscriber, db *storage.DB) (*CtlServer, error) {
+	reg, err := registry.New(conf.MuxRegConf)
 	if err != nil {
 		return nil, err
 	}
+
 	s := &CtlServer{
-		conf:    conf,
-		logger:  log.New("S"),
-		db:      db,
-		reg:     reg,
-		sub:     sub,
-		filter:  map[string]bool{},
-		tracker: tracker.New(db),
-		done:    make(chan struct{}),
+		logger:           log.New("S"),
+		db:               db,
+		reg:              reg,
+		sub:              sub,
+		filter:           map[string]bool{},
+		tracker:          tracker.New(db),
+		done:             make(chan struct{}),
+		gracefulShutdown: conf.GracefulShutdown,
 	}
 
-	server, err := birpc.NewServer(conf.BuildRPCServerConf(s.ValidateClient))
+	conf.RPCConf.ValidateFunc = s.ValidateClient
+	server, err := birpc.NewServer(&conf.RPCConf)
 	if err != nil {
 		return nil, err
 	}
@@ -138,6 +140,6 @@ func (s *CtlServer) GracefulShutdown() {
 	}()
 	select {
 	case <-done:
-	case <-time.After(s.conf.Timeout.GracefulShutdown):
+	case <-time.After(s.gracefulShutdown):
 	}
 }

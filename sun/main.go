@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"strings"
 
@@ -31,14 +32,23 @@ func Run() {
 	flag.Parse()
 	logger := log.New("M")
 
+	ip, err := util.HostIP()
+	if err != nil {
+		logger.Fatalf("Resolve host IP failed: %v", err)
+	}
 	cconf, err := cc.NewConfigFromFile(*c)
 	if err != nil {
 		logger.Fatalf("Load config failed: %v", err)
 	}
+	cconf.Set("host_ip", ip)
 	debugAddr := cconf.String("debug_addr")
-	datadir := cconf.Config("storage").String("datadir")
-	sconf := BuildConfig(cconf.Config("core"))
-	webconf := BuildWebConfig(cconf.Config("web"))
+	datadir := cconf.String("datadir")
+	coreconf := buildCoreConfig(cconf)
+	_, port, err := net.SplitHostPort(coreconf.RPCConf.ListenAddr)
+	if err != nil {
+		logger.Fatal("Parse control address failed: %v", err)
+	}
+	webconf := buildWebConfig(port, cconf)
 	cconf = nil
 
 	fatalF := func(err error, ignoreEOF bool, format string, args ...interface{}) {
@@ -59,7 +69,7 @@ func Run() {
 	ps := pubsub.New()
 	errCh := make(chan error, 2)
 
-	ctls, err := NewCtlServer(sconf, ps, db)
+	ctls, err := NewCtlServer(coreconf, ps, db)
 	fatalF(err, false, "Init core server failed")
 	go func() { errCh <- ctls.Run() }()
 

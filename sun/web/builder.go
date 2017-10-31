@@ -63,24 +63,24 @@ var platforms = []platform{
 }
 
 type Builder struct {
-	logger  *zap.SugaredLogger
-	done    int32
-	ctx     context.Context
-	cliConf string
-	Cancel  func()
+	logger      *zap.SugaredLogger
+	done        int32
+	ctx         context.Context
+	agentConfig string
+	Cancel      func()
 }
 
-func NewBuilder(cliConf string) (*Builder, error) {
+func NewBuilder(agentConfig string) (*Builder, error) {
 	if err := os.RemoveAll(tmpDir); err != nil {
 		return nil, err
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Builder{
-		logger:  log.New("web[b]"),
-		cliConf: cliConf,
-		done:    0,
-		ctx:     ctx,
-		Cancel:  cancel,
+		logger:      log.New("web[b]"),
+		agentConfig: agentConfig,
+		done:        0,
+		ctx:         ctx,
+		Cancel:      cancel,
 	}, nil
 }
 
@@ -99,7 +99,7 @@ func (b *Builder) TryGetPkg(username, ahash, os, arch, arm string) ([]byte, erro
 		return nil, errIsBuilding
 	}
 
-	confData := fmt.Sprintf("id: %s\nhash: %s\n%s", username, ahash, b.cliConf)
+	confData := fmt.Sprintf("id: %s\nhash: %s\n%s", username, ahash, b.agentConfig)
 	return zipBin(confData, binPath, binName)
 }
 
