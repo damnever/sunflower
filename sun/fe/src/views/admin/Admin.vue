@@ -17,23 +17,23 @@
     </el-row>
 
     <el-table :data="users" class="hundred-width table-margin-top" v-loading.body="loading">
-      <el-table-column prop="name" label="name" sortable>
+      <el-table-column prop="name" label="Name" sortable>
       </el-table-column>
-      <el-table-column prop="email" label="e-mail" sortable>
+      <el-table-column prop="email" label="E-mail" sortable>
       </el-table-column>
-      <el-table-column label="admin" sortable>
+      <el-table-column label="Admin" sortable>
         <template slot-scope="scope">
           <el-tag :type="scope.row.is_admin ? 'danger' : 'info'">
             {{ scope.row.is_admin }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="created_at" label="created" sortable>
+      <el-table-column prop="created_at" label="CreatedAt" sortable>
       </el-table-column>
       <el-table-column label="action">
         <template slot-scope="scope">
           <el-button @click.native.prevent="deleteUser(scope.row)"
-            type="text" size="small" :disabled="scope.row.is_admin">delete
+            type="danger" size="mini" :disabled="scope.row.is_admin" round>delete
           </el-button>
         </template>
       </el-table-column>

@@ -4,9 +4,9 @@ import VueRouter from 'vue-router'
 import Login from './views/Login.vue'
 import Index from './views/Index.vue'
 import Agent from './views/Agent.vue'
-import Tunnel from './views/Tunnel.vue'
 import Profile from './views/Profile.vue'
 import Admin from './views/admin/Admin.vue'
+import Stats from './views/admin/Stats.vue'
 
 
 Vue.use(VueRouter)
@@ -28,11 +28,6 @@ const routes = [
     'component': Agent,
   },
   {
-    'name': 'Tunnel',
-    'path': '/agent/:ahash|:etag/tunnel/:thash|:ttag',
-    'component': Tunnel,
-  },
-  {
     'name': 'Profile',
     'path': '/profile',
     'component': Profile,
@@ -42,6 +37,12 @@ const routes = [
     'path': '/admin',
     'component': Admin,
   },
+  {
+    'name': 'Stats',
+    'path': '/stats',
+    'component': Stats,
+  },
+
 ]
 
 const router = new VueRouter({

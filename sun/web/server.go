@@ -113,6 +113,7 @@ func (s *Server) setupRouters() {
 	s.registerAuthAPIRouters()
 	s.registerUserAPIRouters()
 	s.registerAdminAPIRouters()
+	s.registerSysAPIRouters()
 }
 
 func (s *Server) registerAssetsRouter() {
@@ -206,6 +207,14 @@ func (s *Server) registerAdminAPIRouters() {
 	g.PATCH("/:username/agents/:ahash/tunnels/:thash", s.updateTunnel)
 	g.PUT("/:username/agents/:ahash/tunnels/:thash", s.updateTunnel)
 	g.DELETE("/:username/agents/:ahash/tunnels/:thash", s.deleteTunnel)
+}
+
+func (s *Server) registerSysAPIRouters() {
+	g := s.e.Group("/api/sys")
+	g.Use(s.authChecker)
+	g.Use(s.adminChecker)
+
+	g.GET("/stats", s.stats)
 }
 
 func newAuthError(format string, args ...interface{}) *echo.HTTPError {

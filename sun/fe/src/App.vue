@@ -14,12 +14,13 @@
           <div id="user" v-show="user.name !== ''">
             <el-dropdown @command="clickDropdown">
               <span>
-                {{ user.name }} <i class="el-icon-caret-bottom el-icon--right"></i>
+                {{ user.name }} <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-show="user.isadmin" command="Admin">Admin</el-dropdown-item>
                 <el-dropdown-item command="Profile">Profile</el-dropdown-item>
-                <el-dropdown-item command="Logout">Logout</el-dropdown-item>
+                <el-dropdown-item v-show="user.isadmin" command="Admin">Admin</el-dropdown-item>
+                <el-dropdown-item v-show="user.isadmin" command="Stats">Stats</el-dropdown-item>
+                <el-dropdown-item command="Logout" divided>Logout</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>

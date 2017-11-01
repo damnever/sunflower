@@ -2,6 +2,23 @@
   width: 100%;
 }
 
+.eighty-width {
+  width: 80%;
+}
+
 .table-margin-top {
   margin-top: 1em;
+}
+
+.table-expand {
+  font-size: 0;
+}
+.table-expand label {
+  width: 80px;
+  color: #99a9bf;
+}
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
 }

@@ -6,39 +6,53 @@
           class="hundred-width" size="small" v-model="qtag">
         </el-input>
       </el-col>
-      <el-col :span="2":offset="16">
+      <el-col :span="2" :offset="15">
         <el-button size="small" icon="el-icon-plus"
           @click="showAddDialog = true"
+          class="eighty-width" round>
+        </el-button>
+      </el-col>
+      <el-col :span="1">
+        <el-button size="small" icon="el-icon-refresh"
+          @click="fetchAgents"
           class="hundred-width" round>
         </el-button>
       </el-col>
     </el-row>
 
     <el-table :data="agents"  class="hundred-width table-margin-top" v-loading.body="loading">
-      <el-table-column prop="hash" label="id" sortable>
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="table-expand">
+            <el-form-item label="Created At">
+              <span>{{ props.row.created_at }}</span>
+            </el-form-item>
+            <el-form-item label="Version">
+              <span>{{ props.row.version }}</span>
+            </el-form-item>
+          </el-form>
+        </template>
       </el-table-column>
-      <el-table-column prop="device" label="device" sortable>
+      <el-table-column prop="hash" label="ID" sortable>
       </el-table-column>
-      <el-table-column prop="version" label="version" sortable>
+      <el-table-column prop="device" label="Device" sortable>
       </el-table-column>
-      <el-table-column prop="delayed" label="delayed" sortable>
+      <el-table-column prop="delayed" label="Delayed" sortable>
       </el-table-column>
-      <el-table-column prop="created_at" label="created" sortable>
+      <el-table-column prop="status" label="Status" sortable>
       </el-table-column>
-      <el-table-column prop="status" label="status" sortable>
+      <el-table-column prop="tag" label="Tag" sortable>
       </el-table-column>
-      <el-table-column prop="tag" label="tag" sortable>
-      </el-table-column>
-      <el-table-column label="action" fixed="right" width="200px">
+      <el-table-column label="Action" fixed="right" width="280px">
         <template slot-scope="scope">
           <el-button @click="deleteAgent(scope.row)"
-            type="text" size="small">delete
+            type="danger" size="mini" round>delete
           </el-button>
           <el-button @click="preDownloadAgent(scope.row.hash)"
-            type="text" size="small">download
+            type="info" size="mini" plain round>download
           </el-button>
           <el-button  @click="clickHash(scope.row.hash, scope.row.tag)"
-            type="text" size="small">tunnels
+            type="info" size="mini" plain round>tunnels
           </el-button>
         </template>
       </el-table-column>
@@ -196,7 +210,7 @@
                 enabled: true,
                 tag: that.addForm.tag,
               })
-              that.$notify.success({message: "Agent created"})
+              that.$notify.success({message: "Agent(" + data.hash + ") created"})
               that.closeAddDialog()
             }).catch((reason) => {})
           },
