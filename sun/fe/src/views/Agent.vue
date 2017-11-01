@@ -41,6 +41,8 @@
       </el-table-column>
       <el-table-column prop="status" label="status" sortable>
       </el-table-column>
+      <el-table-column prop="num_conn" label="conns" sortable>
+      </el-table-column>
       <el-table-column prop="traffic_in" label="in" sortable>
       </el-table-column>
       <el-table-column prop="traffic_out" label="out" sortable>
@@ -237,6 +239,7 @@
                 "server_addr": saddr,
                 "status": "PENDING",
                 "enabled": true,
+                "num_conn": 0,
                 "traffic_in": 0,
                 "traffic_out": 0,
                 "tag": that.form.tag,
