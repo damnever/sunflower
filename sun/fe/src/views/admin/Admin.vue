@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column label="admin" sortable>
         <template slot-scope="scope">
-          <el-tag :type="scope.row.is_admin ? 'danger' : 'gray'">
+          <el-tag :type="scope.row.is_admin ? 'danger' : 'info'">
             {{ scope.row.is_admin }}
           </el-tag>
         </template>

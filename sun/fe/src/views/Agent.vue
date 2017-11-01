@@ -33,7 +33,7 @@
             <div slot="content">
               Copy manually.. {{ scope.row.server_addr.replace("0.0.0.0", config.ip) }}<span v-if="scope.row.proto === 'HTTP'">.{{ config.domain }}</span>
             </div>
-            <el-tag type="gray">{{ scope.row.server_addr.replace("0.0.0.0", "") }}</el-tag>
+            <el-tag type="info">{{ scope.row.server_addr.replace("0.0.0.0", "") }}</el-tag>
           </el-tooltip>
         </template>
       </el-table-column>
