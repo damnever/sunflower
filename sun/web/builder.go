@@ -167,10 +167,6 @@ func zipBin(confData, binPath, binName string) ([]byte, error) {
 	defer bufpool.Put(zipBuf)
 	// Zip writer for executable
 	zipw := zip.NewWriter(zipBuf)
-	binw, err := zipw.Create(binName)
-	if err != nil {
-		return nil, err
-	}
 
 	// Copy executable data into zip file
 	binf, err := os.Open(binPath)
@@ -178,6 +174,18 @@ func zipBin(confData, binPath, binName string) ([]byte, error) {
 		return nil, err
 	}
 	defer binf.Close()
+	bfInfo, err := binf.Stat()
+	if err != nil {
+		return nil, err
+	}
+	bheader, err := zip.FileInfoHeader(bfInfo)
+	if err != nil {
+		return nil, err
+	}
+	binw, err := zipw.CreateHeader(bheader)
+	if err != nil {
+		return nil, err
+	}
 	if _, err := io.Copy(binw, binf); err != nil {
 		return nil, err
 	}
@@ -206,3 +214,17 @@ func zipBin(confData, binPath, binName string) ([]byte, error) {
 	}
 	return zipBuf.Bytes(), nil
 }
+
+/*
+type binFile struct {
+	name string
+	size int64
+}
+
+func (b binFile) Name() string       { return b.name }
+func (b binFile) Size() int64        { return b.size }
+func (b binFile) Mode() os.FileMode  { return 0755 }
+func (b binFile) ModTime() time.Time { return time.Now().Local() }
+func (b binFile) IsDir() bool        { return false }
+func (b binFile) Sys() interface{}   { return nil }
+*/
