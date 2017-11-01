@@ -12,9 +12,9 @@ import (
 
 const (
 	minUsernameLen = 6
-	maxUsernameLen = 12
+	maxUsernameLen = 23
 	minPasswordLen = 8
-	maxPasswordLen = 20
+	maxPasswordLen = 30
 )
 
 var (
