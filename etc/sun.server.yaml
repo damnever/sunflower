@@ -4,7 +4,7 @@ debug_addr: localhost:22223
 datadir: ./data
 
 domain: sunflower.test # if not provide, subdomain feature is disabled
-# proxy_ip:  # set it if you have a proxy in front of your server
+proxy_ip: localhost  # set it if you have a proxy in front of your server or testing(localhost)
 graceful_shutdown: 3 # sec
 control: # ms
     addr: :8888 # listen for agent connections
