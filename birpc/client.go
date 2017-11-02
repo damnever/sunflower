@@ -71,11 +71,15 @@ func (cli *Client) Run(handler ClientHandler) error {
 	defer ticker.Stop()
 	tryConnect := tryConnectFunc(conf, cli.closed)
 
+LOOP:
 	for {
 		select {
 		case <-cli.closed:
 			return nil
 		case err := <-conn.Err():
+			if nerr, ok := err.(net.Error); ok && nerr.Temporary() {
+				continue LOOP
+			}
 			handler.HandleError(err)
 			conn.Close()
 			rawConn, fatalErr := tryConnect()
