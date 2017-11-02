@@ -63,7 +63,7 @@ func (s *Server) createTunnel(c echo.Context) error {
 		return newUserError(err.Error())
 	}
 	exportAddr := c.FormValue("export_addr")
-	if err := ValidateAddr(exportAddr); err != nil {
+	if err := ValidateLocalAddr(exportAddr); err != nil {
 		return newUserError(err.Error())
 	}
 	tag := c.FormValue("tag")
@@ -76,7 +76,7 @@ func (s *Server) createTunnel(c echo.Context) error {
 		serverAddr = fmt.Sprintf("%s.%s", serverAddr, user.targetName)
 	} else {
 		serverAddr = fmt.Sprintf("0.0.0.0:%s", serverAddr)
-		if err := ValidateAddr(serverAddr); err != nil {
+		if err := ValidateServerAddr(serverAddr); err != nil {
 			return newUserError(err.Error())
 		}
 	}

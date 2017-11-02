@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/damnever/cc"
@@ -43,6 +44,11 @@ func Run() {
 	cconf.Set("host_ip", ip)
 	debugAddr := cconf.String("debug_addr")
 	datadir := cconf.String("datadir")
+	datadir, err = filepath.Abs(datadir)
+	if err != nil {
+		logger.Fatal("Resolve absolute path(%s) failed: %v", datadir, err)
+	}
+	cconf.Set("datadir", datadir)
 	coreconf := buildCoreConfig(cconf)
 	_, port, err := net.SplitHostPort(coreconf.RPCConf.ListenAddr)
 	if err != nil {

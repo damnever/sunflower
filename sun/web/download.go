@@ -22,6 +22,9 @@ func (s *Server) download(c echo.Context) error {
 
 	data, err := s.builder.TryGetPkg(user.targetName, ahash, os, arch, arm)
 	if err != nil {
+		if err == errIsBuilding || err == errUnknown {
+			return newUserError(err.Error())
+		}
 		return err
 	}
 	filename := fmt.Sprintf("attachment; filename=flower-%s-%s_%s%s.zip", version.Info(), os, arch, arm)

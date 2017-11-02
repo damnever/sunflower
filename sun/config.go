@@ -48,6 +48,7 @@ func buildCoreConfig(rawConf cc.Configer) Config {
 func buildWebConfig(controlPort string, rawConf cc.Configer) *web.Config {
 	conf := &web.Config{}
 	conf.HostIP = rawConf.StringOr("proxy_ip", rawConf.String("host_ip"))
+	conf.DataDir = rawConf.String("datadir")
 	conf.MuxDomain = rawConf.String("domain")
 	webC := rawConf.Config("web")
 	conf.Addr = webC.String("addr")
@@ -59,8 +60,8 @@ func buildWebConfig(controlPort string, rawConf cc.Configer) *web.Config {
 	conf.MaxAdminTunnels = webC.IntAndOr("max_admin_tunnels", "N>=5&&N<=23", 23)
 	conf.MaxUserAgents = webC.IntAndOr("max_user_agents", "N>=3&&N<=10", 5)
 	conf.MaxUserTunnels = webC.IntAndOr("max_user_tunnels", "N>=3&&N<=12", 10)
-	conf.MaxDownloadsPerHour = webC.IntAndOr("max_tunnel_updates_per_hour", "N>=5&&N<=24", 12)
-	conf.MaxTunnelUpdatePerHour = webC.IntAndOr("max_downloads_per_hour", "N>=5&&N<=24", 8)
+	conf.MaxDownloadsPerHour = webC.IntAndOr("max_downloads_per_hour", "N>=3&&N<=10", 6)
+	conf.MaxTunnelUpdatePerHour = webC.IntAndOr("max_tunnel_updates_per_hour", "N>=5&&N<=24", 12)
 	agentConfig := fmt.Sprintf("control_server: %s:%s\n%s", conf.HostIP, controlPort, webC.String("agent_config"))
 	conf.AgentConfig = agentConfig
 	return conf

@@ -68,7 +68,15 @@ func ValidteProtocol(proto string) error {
 	return fmt.Errorf("unsupported protocol %s", proto)
 }
 
-func ValidateAddr(addr string) error {
+func ValidateLocalAddr(addr string) error {
+	return validateAddr(addr, 0)
+}
+
+func ValidateServerAddr(addr string) error {
+	return validateAddr(addr, 1024)
+}
+
+func validateAddr(addr string, minPort int) error {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return err
@@ -77,7 +85,7 @@ func ValidateAddr(addr string) error {
 	if err != nil {
 		return err
 	}
-	if n < 1024 || n > 65535 {
+	if n < minPort || n > 65535 {
 		return fmt.Errorf("port(%d) must range in [1024, 65535]", n)
 	}
 	if host == "localhost" {
@@ -96,7 +104,10 @@ type counter struct {
 }
 
 func newCounster(max int) *counter {
-	return &counter{max: max}
+	return &counter{
+		max:      max,
+		counters: map[string]*counterItem{},
+	}
 }
 
 func (c *counter) Incr(names ...string) bool {
@@ -134,7 +145,7 @@ func (c *counterItem) Incr() bool {
 
 	if time.Now().Sub(c.countTime).Hours() < float64(1) {
 		c.count += 1
-		if c.count >= c.max {
+		if c.count > c.max {
 			return false
 		}
 	} else {

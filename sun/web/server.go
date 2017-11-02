@@ -31,6 +31,7 @@ type userCtx struct {
 
 type Config struct {
 	Addr                   string
+	DataDir                string
 	MuxDomain              string
 	AllowOrigins           []string
 	HostIP                 string
@@ -54,7 +55,7 @@ type Server struct {
 }
 
 func New(conf *Config, db *storage.DB, pub pubsub.Publisher) (*Server, error) {
-	builder, err := NewBuilder(conf.AgentConfig)
+	builder, err := NewBuilder(conf.DataDir, conf.AgentConfig)
 	if err != nil {
 		return nil, err
 	}
