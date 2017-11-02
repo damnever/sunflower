@@ -39,11 +39,9 @@ func Write(w net.Conn, v interface{}) error {
 		return err
 	}
 
-	buf := bufpool.Get()
-	defer bufpool.Put(buf)
-
 	sz := m.Size()
-	buf.Grow(sz)
+	buf := bufpool.GrowGet(sz)
+	defer bufpool.Put(buf)
 	p := buf.Bytes()[:sz]
 
 	if sz, err = m.MarshalTo(p); err != nil {
@@ -145,6 +143,7 @@ func Read(r net.Conn) (interface{}, error) {
 	buf := bufpool.Get()
 	defer bufpool.Put(buf)
 
+	// bytes.Buffer has WriteTo, no need additional buffer
 	if _, err := io.CopyN(buf, r, int64(sz)); err != nil {
 		return nil, errors.WithStack(err)
 	}

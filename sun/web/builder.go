@@ -21,10 +21,9 @@ import (
 )
 
 var (
-	tmpDir   = filepath.Join(util.TempDir(), "sunflower")
-	goPath   = filepath.Join(tmpDir, version.Full())
-	pkgPath  = filepath.Join(goPath, "src/github.com/damnever/sunflower")
-	mainPath = filepath.Join(pkgPath, "")
+	tmpDir  = filepath.Join(util.TempDir(), "sunflower")
+	goPath  = filepath.Join(tmpDir, version.Full())
+	pkgPath = filepath.Join(goPath, "src/github.com/damnever/sunflower")
 
 	errUnknown    = errors.New("building process has problem or platform is not supported")
 	errIsBuilding = errors.New("is building, please wait for a minute")
@@ -45,6 +44,7 @@ func fmtPlatform(os, arch, arm string) string {
 	return fmt.Sprintf("%s/%s%s", os, arch, arm)
 }
 
+// https://golang.org/doc/install/source#introduction
 // https://github.com/golang/go/wiki/GoArm
 // The order is the priorities, armv4 is not supported.
 // TODO(damnever): make it configurable
@@ -59,23 +59,33 @@ var platforms = []platform{
 	platform{GOOS: "linux", GOARCH: "arm", GOARM: "6"}, // armv6
 	platform{GOOS: "linux", GOARCH: "arm64"},           // armv8
 	platform{GOOS: "linux", GOARCH: "arm", GOARM: "5"}, // armv5
+	platform{GOOS: "linux", GOARCH: "mips64"},
+	platform{GOOS: "linux", GOARCH: "mips64le"},
+	platform{GOOS: "linux", GOARCH: "mips"},
+	platform{GOOS: "linux", GOARCH: "mipsle"},
 }
 
 type Builder struct {
 	logger      *zap.SugaredLogger
 	done        int32
 	ctx         context.Context
+	bindir      string
 	agentConfig string
 	Cancel      func()
 }
 
-func NewBuilder(agentConfig string) (*Builder, error) {
+func NewBuilder(datadir string, agentConfig string) (*Builder, error) {
 	if err := os.RemoveAll(tmpDir); err != nil {
+		return nil, err
+	}
+	bindir := filepath.Join(datadir, "bin")
+	if err := os.RemoveAll(bindir); err != nil {
 		return nil, err
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Builder{
 		logger:      log.New("web[b]"),
+		bindir:      bindir,
 		agentConfig: agentConfig,
 		done:        0,
 		ctx:         ctx,
@@ -89,7 +99,7 @@ func (b *Builder) TryGetPkg(username, ahash, os, arch, arm string) ([]byte, erro
 		ext = ".exe"
 	}
 	binName := "flower" + ext
-	binPath := filepath.Join(pkgPath, "bin", fmtPlatform(os, arch, arm), binName)
+	binPath := filepath.Join(b.bindir, fmtPlatform(os, arch, arm), binName)
 
 	if !util.FileExist(binPath) {
 		if atomic.LoadInt32(&b.done) == int32(1) {
@@ -106,7 +116,7 @@ func (b *Builder) StartCrossPlatformBuild() {
 	b.logger.Info("Start cross platform build")
 
 	for _, platform := range platforms {
-		err := makeFlower(b.ctx, platform)
+		err := b.makeFlower(platform)
 		if err == nil {
 			b.logger.Infof("Build %s success", platform.String())
 			continue
@@ -118,20 +128,23 @@ func (b *Builder) StartCrossPlatformBuild() {
 	}
 
 	atomic.StoreInt32(&b.done, 1)
+	if err := os.RemoveAll(goPath); err != nil {
+		b.logger.Errorf("Remove %v failed: %v", err)
+	}
 	b.logger.Info("Cross platform build done")
 }
 
-func makeFlower(ctx context.Context, p platform) error {
+func (b *Builder) makeFlower(p platform) error {
 	if err := tryRestorePkgPath(); err != nil {
 		return err
 	}
-	binDir := filepath.Join(pkgPath, "bin", p.String())
+	binDir := filepath.Join(b.bindir, p.String())
 	if err := os.MkdirAll(binDir, 0750); err != nil && !os.IsExist(err) {
 		return err
 	}
 
 	buidlCmd := fmt.Sprintf("cd %s && go build -o '%s/flower%s' ./cmd/flower", pkgPath, binDir, p.Ext)
-	cmd := exec.CommandContext(ctx, "/bin/bash", "-c", buidlCmd)
+	cmd := exec.CommandContext(b.ctx, "/bin/bash", "-c", buidlCmd)
 	cmd.Env = append(
 		os.Environ(),
 		"GOPATH="+goPath,
@@ -186,7 +199,9 @@ func zipBin(confData, binPath, binName string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	if _, err := io.Copy(binw, binf); err != nil {
+	tmpBuf := bufpool.GrowGet(32768) // 32 * 1024
+	defer bufpool.Put(tmpBuf)
+	if _, err := io.CopyBuffer(binw, binf, tmpBuf.Bytes()[:32768]); err != nil {
 		return nil, err
 	}
 
@@ -214,17 +229,3 @@ func zipBin(confData, binPath, binName string) ([]byte, error) {
 	}
 	return zipBuf.Bytes(), nil
 }
-
-/*
-type binFile struct {
-	name string
-	size int64
-}
-
-func (b binFile) Name() string       { return b.name }
-func (b binFile) Size() int64        { return b.size }
-func (b binFile) Mode() os.FileMode  { return 0755 }
-func (b binFile) ModTime() time.Time { return time.Now().Local() }
-func (b binFile) IsDir() bool        { return false }
-func (b binFile) Sys() interface{}   { return nil }
-*/

@@ -18,7 +18,7 @@ type DB struct {
 }
 
 func New(datadir string) (*DB, error) {
-	if err := os.MkdirAll(datadir, 0700); err != nil {
+	if err := os.MkdirAll(datadir, 0750); err != nil {
 		return nil, err
 	}
 	fpath := filepath.Join(datadir, "sqlite3.db")

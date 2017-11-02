@@ -4,6 +4,8 @@ import (
 	"io"
 	"net"
 	"sync"
+
+	"github.com/damnever/sunflower/pkg/bufpool"
 )
 
 // LinkStream links two connection,
@@ -16,7 +18,9 @@ func LinkStream(inConn, outConn net.Conn) (int64, int64) {
 		defer wg.Done()
 		defer out.Close()
 
-		*traffic, _ = io.Copy(out, in)
+		buf := bufpool.GrowGet(2048)
+		defer bufpool.Put(buf)
+		*traffic, _ = io.CopyBuffer(out, in, buf.Bytes()[:2048])
 		if tc, ok := out.(*net.TCPConn); ok {
 			tc.CloseRead()
 			tc.CloseWrite()

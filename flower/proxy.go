@@ -81,6 +81,9 @@ func (p *TCPProxy) Serve() {
 			p.logger.Warnf("Accept stream: %v", err)
 			continue
 		}
+		if nerr, ok := err.(net.Error); ok && nerr.Temporary() {
+			continue
+		}
 
 		if p.isclosed() {
 			break

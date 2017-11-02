@@ -1,6 +1,7 @@
 package flower
 
 import (
+	"net"
 	"sync"
 	"time"
 
@@ -135,5 +136,25 @@ func (c *Controler) HandleUnknownMessage(msg interface{}) {
 }
 
 func (c *Controler) HandleError(err error) {
+	if err == nil {
+		return
+	}
 	c.logger.Errorf("Error: %+v", err)
+	if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+		return
+	}
+	/*
+		opErr, ok := err.(*net.OpError)
+		if !ok {
+			return
+		}
+		if opErr.Err == syscall.ECONNABORTED {
+		}
+	*/
+	c.Lock()
+	for thash, prx := range c.proxies {
+		delete(c.proxies, thash) // it does not free up memory
+		prx.Close()
+	}
+	c.Unlock()
 }
