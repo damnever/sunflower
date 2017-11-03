@@ -41,7 +41,7 @@ func NewHTTPTunnelMuxer(domain string, addr string) (*HTTPTunnelMuxer, error) {
 	return &HTTPTunnelMuxer{
 		logger:   log.New("mux[http]"),
 		l:        l,
-		domain:   fmt.Sprintf(".%s", domain),
+		domain:   fmt.Sprintf(".%s", strings.ToLower(domain)),
 		registry: map[string]*httpConnListener{},
 		closed:   false,
 	}, nil
@@ -99,6 +99,7 @@ func (hm *HTTPTunnelMuxer) handleConn(conn net.Conn) {
 }
 
 func (hm *HTTPTunnelMuxer) Listen(subdomain string) (*httpConnListener, error) {
+	subdomain = strings.ToLower(subdomain)
 	hm.Lock()
 	defer hm.Unlock()
 	if hm.closed {

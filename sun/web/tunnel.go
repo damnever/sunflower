@@ -73,7 +73,7 @@ func (s *Server) createTunnel(c echo.Context) error {
 
 	serverAddr := c.FormValue("server_addr")
 	if proto == "HTTP" {
-		serverAddr = fmt.Sprintf("%s.%s", serverAddr, user.targetName)
+		serverAddr = strings.ToLower(fmt.Sprintf("%s.%s", serverAddr, user.targetName))
 	} else {
 		serverAddr = fmt.Sprintf("0.0.0.0:%s", serverAddr)
 		if err := ValidateServerAddr(serverAddr); err != nil {

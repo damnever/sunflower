@@ -68,7 +68,7 @@ func Host(req *http.Request) string {
 	if err != nil {
 		host = req.Host
 	}
-	return host
+	return strings.ToLower(host)
 }
 
 // Taken from https://play.golang.org/p/BDt3qEQ_2H

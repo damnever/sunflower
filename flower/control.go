@@ -100,6 +100,7 @@ func (c *Controler) HandleNewTunnelRequest(req *msgpb.NewTunnelRequest) *msgpb.N
 		resp.ErrCode = msgpb.ErrCodeBadRegistryAddr
 		return resp
 	}
+	c.logger.Infof("New tunnel %s registered", req.TunnelHash)
 
 	c.proxies[req.TunnelHash] = proxy
 	go func() {

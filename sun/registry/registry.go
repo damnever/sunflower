@@ -167,7 +167,6 @@ func (tr *TCPTunnelRegistry) makeTunnel(tracker *tracker.TunnelTracker, proto, s
 		tunnel Tunnel
 		err    error
 	)
-	// TODO(damnever): check the subdomain or listen address whether is legal
 	proto = strings.ToLower(proto)
 	switch proto {
 	case "http", "tcp":
