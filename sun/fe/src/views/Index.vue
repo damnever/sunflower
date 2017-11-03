@@ -141,7 +141,7 @@
     computed: {
       archs () {
         if (this.dlForm.GOOS === "linux") {
-          return ["amd64", "386", "arm", "arm64"]
+          return ["amd64", "386", "arm", "arm64", "mips64", "mips64le", "mips", "mipsle"]
         }
         this.dlForm.GOARCH = "amd64"
         return ["amd64", "386"]

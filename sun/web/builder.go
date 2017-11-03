@@ -2,6 +2,7 @@ package web
 
 import (
 	"archive/zip"
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -176,8 +177,10 @@ func tryRestorePkgPath() error {
 }
 
 func zipBin(confData, binPath, binName string) ([]byte, error) {
-	zipBuf := bufpool.Get()
-	defer bufpool.Put(zipBuf)
+	/* zipBuf := bufpool.Get() */
+	/* defer bufpool.Put(zipBuf) */
+	// TODO(damnever): resuse the big buffer
+	zipBuf := new(bytes.Buffer)
 	// Zip writer for executable
 	zipw := zip.NewWriter(zipBuf)
 
