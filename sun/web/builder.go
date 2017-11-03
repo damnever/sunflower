@@ -195,6 +195,7 @@ func zipBin(confData, binPath, binName string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	bheader.Method = zip.Deflate
 	binw, err := zipw.CreateHeader(bheader)
 	if err != nil {
 		return nil, err
