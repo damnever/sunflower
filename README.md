@@ -7,15 +7,15 @@ NOTE:
 - Only one connection per tunnel, don't worry, it wroks fine..
 - There are too many TODOs on front-end and..
 - Cross platform build is not working, also build it on Windows may have problems..
+- Optimizing memory usage, server side stats(gc, runtime, memery)..
 - Anyway, get started now, the other things is not important..
 
 ### Quick Start
 
 ```
-$ go get github.com/damnever/sunflower/...
+$ go get github.com/damnever/sunflower/cmds/sun/...
 $ cd `go list -e -f '{{.Dir}}' github.com/damnever/sunflower`
-$ make sun
-$ ./bin/sun -b -c etc/sun.server.yaml
+$ sun -b -c etc/sun.server.yaml
 # I assume it has opened a new tab on your browser:
 #  1) Login
 #  2) Create an agent

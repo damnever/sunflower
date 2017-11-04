@@ -1,4 +1,4 @@
-build: assets sun
+build: assets protoc sun
 
 sun: pre-build
 	go build -o 'bin/sun' -ldflags '-X github.com/damnever/sunflower/version.Build=$(shell date +%Y_%m_%d_`date +%s`)' ./cmd/sun
@@ -6,7 +6,7 @@ sun: pre-build
 flower: pre-build # ignore it..
 	go build -o 'bin/flower' ./cmd/flower
 
-pre-build: protoc
+pre-build:
 	mkdir -p bin
 
 protoc:
@@ -21,7 +21,7 @@ assets: npm-build
 			dep=$${dep#$$importPath/}; \
 			fileredDeps="$${fileredDeps} $${dep}"; \
 	done; \
-	zip -r sun/fe/flower.zip cmd/flower $${fileredDeps} # the prefix..
+	zip -r sun/fe/flower.zip cmd/flower $${fileredDeps} # the prefix, TODO: use cat >> bin && zip -A..
 	go-bindata -o=./sun/web/assets.go -pkg=web -prefix=sun/fe/ ./sun/fe/index.html ./sun/fe/dist/... ./sun/fe/flower.zip
 	rm -f sun/fe/flower.zip
 

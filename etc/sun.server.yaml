@@ -27,8 +27,8 @@ web:
     max_admin_tunnels: 23
     max_user_agents: 5
     max_user_tunnels: 10
-    max_tunnel_updates_per_hour: 12
-    max_downloads_per_hour: 8
+    max_tunnel_updates_per_hour: 12 # per agent
+    max_downloads_per_hour: 6 # per agent
     # Agent config
     agent_config: |
         debug_addr: 0.0.0.0:22222
