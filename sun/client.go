@@ -76,12 +76,13 @@ func (c *CtlClient) handleMessage(m interface{}) {
 		c.Out() <- msgpb.PingResponse{}
 
 		if c.lastPingT.IsZero() {
-			c.lastPingT = now
 			c.delayTimer = delaytimer.New(defaultDelayTimerBufferSize)
 		} else {
-			delayed := c.delayTimer.Calc(now.Sub(c.lastPingT))
+			d := now.Sub(c.lastPingT)
+			delayed := c.delayTimer.Calc(d)
 			c.tracker.Delayed(delayed)
 		}
+		c.lastPingT = now
 	case *msgpb.NewTunnelResponse:
 		// XXX(damnever): create tunnel after response received?
 		// since we deregister all tunnels when connection disrupted,
