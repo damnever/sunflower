@@ -23,10 +23,15 @@
 */
 package msgpb
 
-import proto "github.com/golang/protobuf/proto"
+import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
 import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
+
+import strconv "strconv"
+
+import strings "strings"
+import reflect "reflect"
 
 import io "io"
 
@@ -39,7 +44,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
 type ErrCode int32
 
@@ -75,9 +80,6 @@ var ErrCode_value = map[string]int32{
 	"ErrCodeInternalServerError": 7,
 }
 
-func (x ErrCode) String() string {
-	return proto.EnumName(ErrCode_name, int32(x))
-}
 func (ErrCode) EnumDescriptor() ([]byte, []int) { return fileDescriptorMsg, []int{0} }
 
 // client <-> server
@@ -90,7 +92,6 @@ type HandshakeRequest struct {
 }
 
 func (m *HandshakeRequest) Reset()                    { *m = HandshakeRequest{} }
-func (m *HandshakeRequest) String() string            { return proto.CompactTextString(m) }
 func (*HandshakeRequest) ProtoMessage()               {}
 func (*HandshakeRequest) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{0} }
 
@@ -99,7 +100,6 @@ type HandshakeResponse struct {
 }
 
 func (m *HandshakeResponse) Reset()                    { *m = HandshakeResponse{} }
-func (m *HandshakeResponse) String() string            { return proto.CompactTextString(m) }
 func (*HandshakeResponse) ProtoMessage()               {}
 func (*HandshakeResponse) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{1} }
 
@@ -107,7 +107,6 @@ type PingRequest struct {
 }
 
 func (m *PingRequest) Reset()                    { *m = PingRequest{} }
-func (m *PingRequest) String() string            { return proto.CompactTextString(m) }
 func (*PingRequest) ProtoMessage()               {}
 func (*PingRequest) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{2} }
 
@@ -115,7 +114,6 @@ type PingResponse struct {
 }
 
 func (m *PingResponse) Reset()                    { *m = PingResponse{} }
-func (m *PingResponse) String() string            { return proto.CompactTextString(m) }
 func (*PingResponse) ProtoMessage()               {}
 func (*PingResponse) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{3} }
 
@@ -127,7 +125,6 @@ type TunnelHandshakeRequest struct {
 }
 
 func (m *TunnelHandshakeRequest) Reset()                    { *m = TunnelHandshakeRequest{} }
-func (m *TunnelHandshakeRequest) String() string            { return proto.CompactTextString(m) }
 func (*TunnelHandshakeRequest) ProtoMessage()               {}
 func (*TunnelHandshakeRequest) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{4} }
 
@@ -136,7 +133,6 @@ type TunnelHandshakeResponse struct {
 }
 
 func (m *TunnelHandshakeResponse) Reset()                    { *m = TunnelHandshakeResponse{} }
-func (m *TunnelHandshakeResponse) String() string            { return proto.CompactTextString(m) }
 func (*TunnelHandshakeResponse) ProtoMessage()               {}
 func (*TunnelHandshakeResponse) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{5} }
 
@@ -151,7 +147,6 @@ type NewTunnelRequest struct {
 }
 
 func (m *NewTunnelRequest) Reset()                    { *m = NewTunnelRequest{} }
-func (m *NewTunnelRequest) String() string            { return proto.CompactTextString(m) }
 func (*NewTunnelRequest) ProtoMessage()               {}
 func (*NewTunnelRequest) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{6} }
 
@@ -161,7 +156,6 @@ type NewTunnelResponse struct {
 }
 
 func (m *NewTunnelResponse) Reset()                    { *m = NewTunnelResponse{} }
-func (m *NewTunnelResponse) String() string            { return proto.CompactTextString(m) }
 func (*NewTunnelResponse) ProtoMessage()               {}
 func (*NewTunnelResponse) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{7} }
 
@@ -172,7 +166,6 @@ type CloseTunnelRequest struct {
 }
 
 func (m *CloseTunnelRequest) Reset()                    { *m = CloseTunnelRequest{} }
-func (m *CloseTunnelRequest) String() string            { return proto.CompactTextString(m) }
 func (*CloseTunnelRequest) ProtoMessage()               {}
 func (*CloseTunnelRequest) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{8} }
 
@@ -182,7 +175,6 @@ type CloseTunnelResponse struct {
 }
 
 func (m *CloseTunnelResponse) Reset()                    { *m = CloseTunnelResponse{} }
-func (m *CloseTunnelResponse) String() string            { return proto.CompactTextString(m) }
 func (*CloseTunnelResponse) ProtoMessage()               {}
 func (*CloseTunnelResponse) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{9} }
 
@@ -193,7 +185,6 @@ type ShutdownRequest struct {
 }
 
 func (m *ShutdownRequest) Reset()                    { *m = ShutdownRequest{} }
-func (m *ShutdownRequest) String() string            { return proto.CompactTextString(m) }
 func (*ShutdownRequest) ProtoMessage()               {}
 func (*ShutdownRequest) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{10} }
 
@@ -214,12 +205,12 @@ type Message struct {
 }
 
 func (m *Message) Reset()                    { *m = Message{} }
-func (m *Message) String() string            { return proto.CompactTextString(m) }
 func (*Message) ProtoMessage()               {}
 func (*Message) Descriptor() ([]byte, []int) { return fileDescriptorMsg, []int{11} }
 
 type isMessage_Body interface {
 	isMessage_Body()
+	Equal(interface{}) bool
 	MarshalTo([]byte) (int, error)
 	Size() int
 }
@@ -613,6 +604,983 @@ func init() {
 	proto.RegisterType((*ShutdownRequest)(nil), "msgpb.ShutdownRequest")
 	proto.RegisterType((*Message)(nil), "msgpb.Message")
 	proto.RegisterEnum("msgpb.ErrCode", ErrCode_name, ErrCode_value)
+}
+func (x ErrCode) String() string {
+	s, ok := ErrCode_name[int32(x)]
+	if ok {
+		return s
+	}
+	return strconv.Itoa(int(x))
+}
+func (this *HandshakeRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*HandshakeRequest)
+	if !ok {
+		that2, ok := that.(HandshakeRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.ID != that1.ID {
+		return false
+	}
+	if this.Hash != that1.Hash {
+		return false
+	}
+	if this.Version != that1.Version {
+		return false
+	}
+	if this.Device != that1.Device {
+		return false
+	}
+	return true
+}
+func (this *HandshakeResponse) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*HandshakeResponse)
+	if !ok {
+		that2, ok := that.(HandshakeResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.ErrCode != that1.ErrCode {
+		return false
+	}
+	return true
+}
+func (this *PingRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*PingRequest)
+	if !ok {
+		that2, ok := that.(PingRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	return true
+}
+func (this *PingResponse) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*PingResponse)
+	if !ok {
+		that2, ok := that.(PingResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	return true
+}
+func (this *TunnelHandshakeRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*TunnelHandshakeRequest)
+	if !ok {
+		that2, ok := that.(TunnelHandshakeRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.ID != that1.ID {
+		return false
+	}
+	if this.ClientHash != that1.ClientHash {
+		return false
+	}
+	if this.TunnelHash != that1.TunnelHash {
+		return false
+	}
+	return true
+}
+func (this *TunnelHandshakeResponse) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*TunnelHandshakeResponse)
+	if !ok {
+		that2, ok := that.(TunnelHandshakeResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.ErrCode != that1.ErrCode {
+		return false
+	}
+	return true
+}
+func (this *NewTunnelRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*NewTunnelRequest)
+	if !ok {
+		that2, ok := that.(NewTunnelRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.ID != that1.ID {
+		return false
+	}
+	if this.ClientHash != that1.ClientHash {
+		return false
+	}
+	if this.TunnelHash != that1.TunnelHash {
+		return false
+	}
+	if this.Proto != that1.Proto {
+		return false
+	}
+	if this.ExportAddr != that1.ExportAddr {
+		return false
+	}
+	if this.RegistryAddr != that1.RegistryAddr {
+		return false
+	}
+	return true
+}
+func (this *NewTunnelResponse) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*NewTunnelResponse)
+	if !ok {
+		that2, ok := that.(NewTunnelResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.TunnelHash != that1.TunnelHash {
+		return false
+	}
+	if this.ErrCode != that1.ErrCode {
+		return false
+	}
+	return true
+}
+func (this *CloseTunnelRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*CloseTunnelRequest)
+	if !ok {
+		that2, ok := that.(CloseTunnelRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.ID != that1.ID {
+		return false
+	}
+	if this.ClientHash != that1.ClientHash {
+		return false
+	}
+	if this.TunnelHash != that1.TunnelHash {
+		return false
+	}
+	return true
+}
+func (this *CloseTunnelResponse) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*CloseTunnelResponse)
+	if !ok {
+		that2, ok := that.(CloseTunnelResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.TunnelHash != that1.TunnelHash {
+		return false
+	}
+	if this.ErrCode != that1.ErrCode {
+		return false
+	}
+	return true
+}
+func (this *ShutdownRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*ShutdownRequest)
+	if !ok {
+		that2, ok := that.(ShutdownRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.ID != that1.ID {
+		return false
+	}
+	if this.ClientHash != that1.ClientHash {
+		return false
+	}
+	if this.TunnelHash != that1.TunnelHash {
+		return false
+	}
+	return true
+}
+func (this *Message) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message)
+	if !ok {
+		that2, ok := that.(Message)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if that1.Body == nil {
+		if this.Body != nil {
+			return false
+		}
+	} else if this.Body == nil {
+		return false
+	} else if !this.Body.Equal(that1.Body) {
+		return false
+	}
+	return true
+}
+func (this *Message_HandshakeRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message_HandshakeRequest)
+	if !ok {
+		that2, ok := that.(Message_HandshakeRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.HandshakeRequest.Equal(that1.HandshakeRequest) {
+		return false
+	}
+	return true
+}
+func (this *Message_HandshakeResponse) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message_HandshakeResponse)
+	if !ok {
+		that2, ok := that.(Message_HandshakeResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.HandshakeResponse.Equal(that1.HandshakeResponse) {
+		return false
+	}
+	return true
+}
+func (this *Message_TunnelHandshakeRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message_TunnelHandshakeRequest)
+	if !ok {
+		that2, ok := that.(Message_TunnelHandshakeRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.TunnelHandshakeRequest.Equal(that1.TunnelHandshakeRequest) {
+		return false
+	}
+	return true
+}
+func (this *Message_TunnelHandshakeResponse) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message_TunnelHandshakeResponse)
+	if !ok {
+		that2, ok := that.(Message_TunnelHandshakeResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.TunnelHandshakeResponse.Equal(that1.TunnelHandshakeResponse) {
+		return false
+	}
+	return true
+}
+func (this *Message_PingRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message_PingRequest)
+	if !ok {
+		that2, ok := that.(Message_PingRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.PingRequest.Equal(that1.PingRequest) {
+		return false
+	}
+	return true
+}
+func (this *Message_PingResponse) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message_PingResponse)
+	if !ok {
+		that2, ok := that.(Message_PingResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.PingResponse.Equal(that1.PingResponse) {
+		return false
+	}
+	return true
+}
+func (this *Message_NewTunnelRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message_NewTunnelRequest)
+	if !ok {
+		that2, ok := that.(Message_NewTunnelRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.NewTunnelRequest.Equal(that1.NewTunnelRequest) {
+		return false
+	}
+	return true
+}
+func (this *Message_NewTunnelResponse) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message_NewTunnelResponse)
+	if !ok {
+		that2, ok := that.(Message_NewTunnelResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.NewTunnelResponse.Equal(that1.NewTunnelResponse) {
+		return false
+	}
+	return true
+}
+func (this *Message_CloseTunnelRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message_CloseTunnelRequest)
+	if !ok {
+		that2, ok := that.(Message_CloseTunnelRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.CloseTunnelRequest.Equal(that1.CloseTunnelRequest) {
+		return false
+	}
+	return true
+}
+func (this *Message_CloseTunnelResponse) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message_CloseTunnelResponse)
+	if !ok {
+		that2, ok := that.(Message_CloseTunnelResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.CloseTunnelResponse.Equal(that1.CloseTunnelResponse) {
+		return false
+	}
+	return true
+}
+func (this *Message_ShutdownRequest) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Message_ShutdownRequest)
+	if !ok {
+		that2, ok := that.(Message_ShutdownRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.ShutdownRequest.Equal(that1.ShutdownRequest) {
+		return false
+	}
+	return true
+}
+func (this *HandshakeRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 8)
+	s = append(s, "&msgpb.HandshakeRequest{")
+	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
+	s = append(s, "Hash: "+fmt.Sprintf("%#v", this.Hash)+",\n")
+	s = append(s, "Version: "+fmt.Sprintf("%#v", this.Version)+",\n")
+	s = append(s, "Device: "+fmt.Sprintf("%#v", this.Device)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *HandshakeResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&msgpb.HandshakeResponse{")
+	s = append(s, "ErrCode: "+fmt.Sprintf("%#v", this.ErrCode)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *PingRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 4)
+	s = append(s, "&msgpb.PingRequest{")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *PingResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 4)
+	s = append(s, "&msgpb.PingResponse{")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *TunnelHandshakeRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 7)
+	s = append(s, "&msgpb.TunnelHandshakeRequest{")
+	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
+	s = append(s, "ClientHash: "+fmt.Sprintf("%#v", this.ClientHash)+",\n")
+	s = append(s, "TunnelHash: "+fmt.Sprintf("%#v", this.TunnelHash)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *TunnelHandshakeResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&msgpb.TunnelHandshakeResponse{")
+	s = append(s, "ErrCode: "+fmt.Sprintf("%#v", this.ErrCode)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *NewTunnelRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 10)
+	s = append(s, "&msgpb.NewTunnelRequest{")
+	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
+	s = append(s, "ClientHash: "+fmt.Sprintf("%#v", this.ClientHash)+",\n")
+	s = append(s, "TunnelHash: "+fmt.Sprintf("%#v", this.TunnelHash)+",\n")
+	s = append(s, "Proto: "+fmt.Sprintf("%#v", this.Proto)+",\n")
+	s = append(s, "ExportAddr: "+fmt.Sprintf("%#v", this.ExportAddr)+",\n")
+	s = append(s, "RegistryAddr: "+fmt.Sprintf("%#v", this.RegistryAddr)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *NewTunnelResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&msgpb.NewTunnelResponse{")
+	s = append(s, "TunnelHash: "+fmt.Sprintf("%#v", this.TunnelHash)+",\n")
+	s = append(s, "ErrCode: "+fmt.Sprintf("%#v", this.ErrCode)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *CloseTunnelRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 7)
+	s = append(s, "&msgpb.CloseTunnelRequest{")
+	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
+	s = append(s, "ClientHash: "+fmt.Sprintf("%#v", this.ClientHash)+",\n")
+	s = append(s, "TunnelHash: "+fmt.Sprintf("%#v", this.TunnelHash)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *CloseTunnelResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&msgpb.CloseTunnelResponse{")
+	s = append(s, "TunnelHash: "+fmt.Sprintf("%#v", this.TunnelHash)+",\n")
+	s = append(s, "ErrCode: "+fmt.Sprintf("%#v", this.ErrCode)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *ShutdownRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 7)
+	s = append(s, "&msgpb.ShutdownRequest{")
+	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
+	s = append(s, "ClientHash: "+fmt.Sprintf("%#v", this.ClientHash)+",\n")
+	s = append(s, "TunnelHash: "+fmt.Sprintf("%#v", this.TunnelHash)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *Message) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 15)
+	s = append(s, "&msgpb.Message{")
+	if this.Body != nil {
+		s = append(s, "Body: "+fmt.Sprintf("%#v", this.Body)+",\n")
+	}
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *Message_HandshakeRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&msgpb.Message_HandshakeRequest{` +
+		`HandshakeRequest:` + fmt.Sprintf("%#v", this.HandshakeRequest) + `}`}, ", ")
+	return s
+}
+func (this *Message_HandshakeResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&msgpb.Message_HandshakeResponse{` +
+		`HandshakeResponse:` + fmt.Sprintf("%#v", this.HandshakeResponse) + `}`}, ", ")
+	return s
+}
+func (this *Message_TunnelHandshakeRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&msgpb.Message_TunnelHandshakeRequest{` +
+		`TunnelHandshakeRequest:` + fmt.Sprintf("%#v", this.TunnelHandshakeRequest) + `}`}, ", ")
+	return s
+}
+func (this *Message_TunnelHandshakeResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&msgpb.Message_TunnelHandshakeResponse{` +
+		`TunnelHandshakeResponse:` + fmt.Sprintf("%#v", this.TunnelHandshakeResponse) + `}`}, ", ")
+	return s
+}
+func (this *Message_PingRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&msgpb.Message_PingRequest{` +
+		`PingRequest:` + fmt.Sprintf("%#v", this.PingRequest) + `}`}, ", ")
+	return s
+}
+func (this *Message_PingResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&msgpb.Message_PingResponse{` +
+		`PingResponse:` + fmt.Sprintf("%#v", this.PingResponse) + `}`}, ", ")
+	return s
+}
+func (this *Message_NewTunnelRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&msgpb.Message_NewTunnelRequest{` +
+		`NewTunnelRequest:` + fmt.Sprintf("%#v", this.NewTunnelRequest) + `}`}, ", ")
+	return s
+}
+func (this *Message_NewTunnelResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&msgpb.Message_NewTunnelResponse{` +
+		`NewTunnelResponse:` + fmt.Sprintf("%#v", this.NewTunnelResponse) + `}`}, ", ")
+	return s
+}
+func (this *Message_CloseTunnelRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&msgpb.Message_CloseTunnelRequest{` +
+		`CloseTunnelRequest:` + fmt.Sprintf("%#v", this.CloseTunnelRequest) + `}`}, ", ")
+	return s
+}
+func (this *Message_CloseTunnelResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&msgpb.Message_CloseTunnelResponse{` +
+		`CloseTunnelResponse:` + fmt.Sprintf("%#v", this.CloseTunnelResponse) + `}`}, ", ")
+	return s
+}
+func (this *Message_ShutdownRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&msgpb.Message_ShutdownRequest{` +
+		`ShutdownRequest:` + fmt.Sprintf("%#v", this.ShutdownRequest) + `}`}, ", ")
+	return s
+}
+func valueToGoStringMsg(v interface{}, typ string) string {
+	rv := reflect.ValueOf(v)
+	if rv.IsNil() {
+		return "nil"
+	}
+	pv := reflect.Indirect(rv).Interface()
+	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
 func (m *HandshakeRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
@@ -1447,6 +2415,258 @@ func sovMsg(x uint64) (n int) {
 }
 func sozMsg(x uint64) (n int) {
 	return sovMsg(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (this *HandshakeRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&HandshakeRequest{`,
+		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
+		`Hash:` + fmt.Sprintf("%v", this.Hash) + `,`,
+		`Version:` + fmt.Sprintf("%v", this.Version) + `,`,
+		`Device:` + fmt.Sprintf("%v", this.Device) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *HandshakeResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&HandshakeResponse{`,
+		`ErrCode:` + fmt.Sprintf("%v", this.ErrCode) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *PingRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&PingRequest{`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *PingResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&PingResponse{`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *TunnelHandshakeRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&TunnelHandshakeRequest{`,
+		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
+		`ClientHash:` + fmt.Sprintf("%v", this.ClientHash) + `,`,
+		`TunnelHash:` + fmt.Sprintf("%v", this.TunnelHash) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *TunnelHandshakeResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&TunnelHandshakeResponse{`,
+		`ErrCode:` + fmt.Sprintf("%v", this.ErrCode) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *NewTunnelRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&NewTunnelRequest{`,
+		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
+		`ClientHash:` + fmt.Sprintf("%v", this.ClientHash) + `,`,
+		`TunnelHash:` + fmt.Sprintf("%v", this.TunnelHash) + `,`,
+		`Proto:` + fmt.Sprintf("%v", this.Proto) + `,`,
+		`ExportAddr:` + fmt.Sprintf("%v", this.ExportAddr) + `,`,
+		`RegistryAddr:` + fmt.Sprintf("%v", this.RegistryAddr) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *NewTunnelResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&NewTunnelResponse{`,
+		`TunnelHash:` + fmt.Sprintf("%v", this.TunnelHash) + `,`,
+		`ErrCode:` + fmt.Sprintf("%v", this.ErrCode) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *CloseTunnelRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&CloseTunnelRequest{`,
+		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
+		`ClientHash:` + fmt.Sprintf("%v", this.ClientHash) + `,`,
+		`TunnelHash:` + fmt.Sprintf("%v", this.TunnelHash) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *CloseTunnelResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&CloseTunnelResponse{`,
+		`TunnelHash:` + fmt.Sprintf("%v", this.TunnelHash) + `,`,
+		`ErrCode:` + fmt.Sprintf("%v", this.ErrCode) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *ShutdownRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&ShutdownRequest{`,
+		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
+		`ClientHash:` + fmt.Sprintf("%v", this.ClientHash) + `,`,
+		`TunnelHash:` + fmt.Sprintf("%v", this.TunnelHash) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message{`,
+		`Body:` + fmt.Sprintf("%v", this.Body) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message_HandshakeRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message_HandshakeRequest{`,
+		`HandshakeRequest:` + strings.Replace(fmt.Sprintf("%v", this.HandshakeRequest), "HandshakeRequest", "HandshakeRequest", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message_HandshakeResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message_HandshakeResponse{`,
+		`HandshakeResponse:` + strings.Replace(fmt.Sprintf("%v", this.HandshakeResponse), "HandshakeResponse", "HandshakeResponse", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message_TunnelHandshakeRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message_TunnelHandshakeRequest{`,
+		`TunnelHandshakeRequest:` + strings.Replace(fmt.Sprintf("%v", this.TunnelHandshakeRequest), "TunnelHandshakeRequest", "TunnelHandshakeRequest", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message_TunnelHandshakeResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message_TunnelHandshakeResponse{`,
+		`TunnelHandshakeResponse:` + strings.Replace(fmt.Sprintf("%v", this.TunnelHandshakeResponse), "TunnelHandshakeResponse", "TunnelHandshakeResponse", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message_PingRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message_PingRequest{`,
+		`PingRequest:` + strings.Replace(fmt.Sprintf("%v", this.PingRequest), "PingRequest", "PingRequest", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message_PingResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message_PingResponse{`,
+		`PingResponse:` + strings.Replace(fmt.Sprintf("%v", this.PingResponse), "PingResponse", "PingResponse", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message_NewTunnelRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message_NewTunnelRequest{`,
+		`NewTunnelRequest:` + strings.Replace(fmt.Sprintf("%v", this.NewTunnelRequest), "NewTunnelRequest", "NewTunnelRequest", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message_NewTunnelResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message_NewTunnelResponse{`,
+		`NewTunnelResponse:` + strings.Replace(fmt.Sprintf("%v", this.NewTunnelResponse), "NewTunnelResponse", "NewTunnelResponse", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message_CloseTunnelRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message_CloseTunnelRequest{`,
+		`CloseTunnelRequest:` + strings.Replace(fmt.Sprintf("%v", this.CloseTunnelRequest), "CloseTunnelRequest", "CloseTunnelRequest", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message_CloseTunnelResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message_CloseTunnelResponse{`,
+		`CloseTunnelResponse:` + strings.Replace(fmt.Sprintf("%v", this.CloseTunnelResponse), "CloseTunnelResponse", "CloseTunnelResponse", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Message_ShutdownRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Message_ShutdownRequest{`,
+		`ShutdownRequest:` + strings.Replace(fmt.Sprintf("%v", this.ShutdownRequest), "ShutdownRequest", "ShutdownRequest", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func valueToStringMsg(v interface{}) string {
+	rv := reflect.ValueOf(v)
+	if rv.IsNil() {
+		return "nil"
+	}
+	pv := reflect.Indirect(rv).Interface()
+	return fmt.Sprintf("*%v", pv)
 }
 func (m *HandshakeRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -3193,55 +4413,56 @@ var (
 func init() { proto.RegisterFile("msg/msgpb/msg.proto", fileDescriptorMsg) }
 
 var fileDescriptorMsg = []byte{
-	// 785 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x55, 0xd1, 0x4e, 0xdb, 0x48,
-	0x14, 0xb5, 0x43, 0xe2, 0xc0, 0x75, 0x00, 0x67, 0x02, 0x89, 0x89, 0xb4, 0x66, 0xe5, 0x7d, 0xd9,
-	0x5d, 0x69, 0x83, 0xc4, 0x3e, 0xac, 0xb4, 0x0f, 0x95, 0x48, 0xa0, 0x35, 0x95, 0xa0, 0xc8, 0x54,
-	0x95, 0x2a, 0x55, 0x8a, 0x1c, 0x7b, 0x6a, 0x5b, 0x04, 0xdb, 0x1d, 0xdb, 0x50, 0xfe, 0xa4, 0x9f,
-	0xc4, 0x4b, 0x25, 0xd4, 0x0f, 0xa8, 0x4a, 0xfa, 0x23, 0x95, 0x67, 0x26, 0x89, 0x63, 0x87, 0xaa,
-	0x7d, 0xa0, 0x2f, 0xd1, 0xdc, 0x3b, 0x73, 0xcf, 0x3d, 0x67, 0x26, 0xe7, 0x1a, 0x5a, 0x97, 0xb1,
-	0xbb, 0x77, 0x19, 0xbb, 0xd1, 0x28, 0xfb, 0xed, 0x45, 0x24, 0x4c, 0x42, 0x54, 0xa3, 0x89, 0xee,
-	0x3f, 0xae, 0x9f, 0x78, 0xe9, 0xa8, 0x67, 0x87, 0x97, 0x7b, 0x6e, 0xe8, 0x86, 0x7b, 0x74, 0x77,
-	0x94, 0xbe, 0xa5, 0x11, 0x0d, 0xe8, 0x8a, 0x55, 0xe9, 0x11, 0x28, 0x86, 0x15, 0x38, 0xb1, 0x67,
-	0x5d, 0x60, 0x13, 0xbf, 0x4b, 0x71, 0x9c, 0xa0, 0x36, 0x54, 0x7c, 0x47, 0x15, 0x7f, 0x17, 0xff,
-	0x5c, 0xeb, 0x4b, 0x93, 0xcf, 0xbb, 0x95, 0xe3, 0x43, 0xb3, 0xe2, 0x3b, 0x08, 0x41, 0xd5, 0xb3,
-	0x62, 0x4f, 0xad, 0x64, 0x3b, 0x26, 0x5d, 0x23, 0x15, 0xea, 0x57, 0x98, 0xc4, 0x7e, 0x18, 0xa8,
-	0x2b, 0x34, 0x3d, 0x0d, 0x51, 0x1b, 0x24, 0x07, 0x5f, 0xf9, 0x36, 0x56, 0xab, 0x74, 0x83, 0x47,
-	0xfa, 0x13, 0x68, 0xe6, 0x3a, 0xc6, 0x51, 0x18, 0xc4, 0x18, 0xfd, 0x05, 0xab, 0x98, 0x90, 0xa1,
-	0x1d, 0x3a, 0x98, 0x36, 0xde, 0xd8, 0xdf, 0xe8, 0x51, 0x3d, 0xbd, 0x23, 0x42, 0x06, 0xa1, 0x83,
-	0xcd, 0x3a, 0x66, 0x0b, 0x7d, 0x1d, 0xe4, 0x33, 0x3f, 0x70, 0x39, 0x59, 0x7d, 0x03, 0x1a, 0x2c,
-	0x64, 0x48, 0x3a, 0x81, 0xf6, 0xcb, 0x34, 0x08, 0xf0, 0xf8, 0x87, 0x65, 0xed, 0x82, 0x6c, 0x8f,
-	0x7d, 0x1c, 0x24, 0xc3, 0x9c, 0x3a, 0x60, 0x29, 0x23, 0xd3, 0xb8, 0x0b, 0x72, 0x42, 0x21, 0xd9,
-	0x01, 0xa6, 0x13, 0x12, 0xde, 0x25, 0xf6, 0xf4, 0x43, 0xe8, 0x94, 0x7a, 0xfe, 0xbc, 0xb0, 0x5b,
-	0x11, 0x94, 0x53, 0x7c, 0xcd, 0x90, 0x1e, 0x9d, 0x34, 0xda, 0x82, 0x1a, 0xfd, 0x0b, 0xf0, 0xe7,
-	0x61, 0x41, 0x56, 0x86, 0xdf, 0x47, 0x21, 0x49, 0x86, 0x96, 0xe3, 0x10, 0xb5, 0xc6, 0xca, 0x58,
-	0xea, 0xc0, 0x71, 0x08, 0xfa, 0x03, 0xd6, 0x09, 0x76, 0xfd, 0x38, 0x21, 0x37, 0xec, 0x88, 0x44,
-	0x8f, 0x34, 0xa6, 0xc9, 0xec, 0x90, 0x3e, 0x84, 0x66, 0x4e, 0x09, 0xbf, 0x8a, 0x02, 0x23, 0xb1,
-	0xc4, 0x28, 0x7f, 0x57, 0x95, 0xef, 0xdf, 0x55, 0x00, 0x68, 0x30, 0x0e, 0x63, 0xfc, 0x8b, 0x2e,
-	0x4b, 0xb7, 0xa0, 0xb5, 0xd0, 0xef, 0x11, 0x24, 0x5d, 0xc0, 0xe6, 0xb9, 0x97, 0x26, 0x4e, 0x78,
-	0x1d, 0x3c, 0xbe, 0x9e, 0x8f, 0x12, 0xd4, 0x4f, 0x70, 0x1c, 0x5b, 0x2e, 0x46, 0x4f, 0xa1, 0xe9,
-	0x4d, 0xff, 0xb7, 0x43, 0xc2, 0x5a, 0xd3, 0xa6, 0xf2, 0x7e, 0x87, 0x93, 0x2d, 0x7a, 0xc9, 0x10,
-	0x4c, 0xc5, 0x2b, 0xfa, 0xeb, 0x18, 0x50, 0x1e, 0x87, 0x5d, 0x11, 0x25, 0x27, 0xef, 0xab, 0x65,
-	0x20, 0xb6, 0x6f, 0x08, 0x66, 0xd3, 0x2b, 0xb9, 0xe6, 0x35, 0xa8, 0x33, 0xfe, 0x45, 0x66, 0x2b,
-	0x14, 0xf0, 0x37, 0x0e, 0xb8, 0xdc, 0xeb, 0x86, 0x60, 0xb6, 0x93, 0xe5, 0x53, 0xe0, 0x0d, 0xec,
-	0x2c, 0x81, 0xe6, 0x64, 0xab, 0x14, 0x5b, 0x7b, 0x08, 0x7b, 0x46, 0xb9, 0x93, 0x3c, 0x60, 0xf7,
-	0xff, 0xa0, 0x11, 0xf9, 0x81, 0x3b, 0x23, 0x5b, 0xa3, 0x80, 0x88, 0x03, 0xe6, 0xe6, 0x96, 0x21,
-	0x98, 0x72, 0x34, 0x0f, 0xd1, 0xff, 0xb0, 0xce, 0x0b, 0x39, 0x15, 0x89, 0x56, 0xb6, 0x16, 0x2a,
-	0x67, 0xfd, 0x1b, 0x51, 0x2e, 0x46, 0xcf, 0x00, 0x05, 0xf8, 0x7a, 0xc8, 0x65, 0x4d, 0x5b, 0xd7,
-	0x17, 0x5e, 0xb0, 0x38, 0x58, 0xb2, 0x17, 0x0c, 0x8a, 0xc3, 0xe6, 0x39, 0xb4, 0x16, 0x80, 0x38,
-	0x95, 0xd5, 0x85, 0x27, 0x2c, 0x19, 0x3b, 0x7b, 0xc2, 0xa0, 0xe4, 0xf6, 0x13, 0xd8, 0xb2, 0x33,
-	0xc7, 0x14, 0x69, 0xad, 0x51, 0xb0, 0x1d, 0x0e, 0x56, 0x36, 0xb1, 0x21, 0x98, 0xc8, 0x2e, 0x5b,
-	0xfb, 0x0c, 0xb6, 0x0b, 0x70, 0x9c, 0x1c, 0x50, 0xbc, 0xee, 0x32, 0xbc, 0x19, 0xbd, 0x96, 0xbd,
-	0xc4, 0xbb, 0x03, 0x50, 0x62, 0xee, 0xb7, 0x19, 0x39, 0x99, 0x82, 0xb5, 0x39, 0x58, 0xc1, 0x8e,
-	0x86, 0x60, 0x6e, 0xc6, 0x8b, 0xa9, 0xbe, 0x04, 0xd5, 0x51, 0xe8, 0xdc, 0xfc, 0xfd, 0x49, 0x84,
-	0x3a, 0x77, 0x34, 0xda, 0x04, 0x99, 0x2f, 0x4f, 0xd3, 0xf1, 0x58, 0x11, 0xd0, 0x16, 0x28, 0x3c,
-	0xd1, 0xb7, 0x9c, 0x01, 0x75, 0xa9, 0x22, 0xa2, 0x6d, 0x68, 0xce, 0xb3, 0xaf, 0xd8, 0x47, 0x53,
-	0xa9, 0xa0, 0x1d, 0xd8, 0x9e, 0xa7, 0xcf, 0xb2, 0x99, 0xfc, 0x82, 0x64, 0x33, 0x55, 0x59, 0x41,
-	0x5d, 0x68, 0xcf, 0xb7, 0xcc, 0xdc, 0xbc, 0x55, 0xaa, 0xa8, 0x03, 0xad, 0x69, 0xd3, 0xf0, 0x3c,
-	0xb5, 0x3d, 0x26, 0x56, 0xa9, 0xe5, 0xf0, 0x0e, 0xd3, 0x68, 0xec, 0xdb, 0x56, 0x82, 0x0f, 0xdc,
-	0x8c, 0x81, 0x84, 0x34, 0xe8, 0xf2, 0xad, 0xe3, 0x20, 0xc1, 0x24, 0xb0, 0xc6, 0xe7, 0x98, 0x5c,
-	0x61, 0x72, 0x44, 0x48, 0x48, 0x94, 0x7a, 0x5f, 0xbd, 0xbd, 0xd7, 0x84, 0xbb, 0x7b, 0x4d, 0xb8,
-	0x9d, 0x68, 0xe2, 0xdd, 0x44, 0x13, 0xbf, 0x4c, 0x34, 0xf1, 0xc3, 0x57, 0x4d, 0x18, 0x49, 0xf4,
-	0x63, 0xf1, 0xef, 0xb7, 0x00, 0x00, 0x00, 0xff, 0xff, 0x9d, 0x9d, 0x46, 0xd1, 0x89, 0x08, 0x00,
-	0x00,
+	// 812 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x55, 0xc1, 0x6e, 0xf3, 0x44,
+	0x10, 0xb6, 0xd3, 0xc4, 0x69, 0xc7, 0x69, 0xeb, 0x6c, 0xda, 0xc4, 0x8d, 0x84, 0x8b, 0xcc, 0x05,
+	0x90, 0x48, 0x51, 0x39, 0x20, 0x71, 0x40, 0x6a, 0xd2, 0x82, 0x8b, 0xd4, 0x52, 0xb9, 0x08, 0x09,
+	0x09, 0x29, 0x72, 0xec, 0xc5, 0xb6, 0x9a, 0xda, 0x66, 0x6d, 0xb7, 0xf4, 0xc6, 0x23, 0xf0, 0x18,
+	0x3c, 0x4a, 0x2f, 0x48, 0x15, 0x27, 0x4e, 0x88, 0x98, 0x0b, 0xc7, 0x3e, 0x02, 0xf2, 0xee, 0x26,
+	0x71, 0xec, 0x14, 0xf1, 0x1f, 0xfa, 0x5f, 0xa2, 0x9d, 0xd9, 0x9d, 0x6f, 0xbe, 0x6f, 0x37, 0xdf,
+	0x18, 0x3a, 0xb7, 0xb1, 0x7b, 0x74, 0x1b, 0xbb, 0xd1, 0x24, 0xff, 0x1d, 0x44, 0x24, 0x4c, 0x42,
+	0xd4, 0xa0, 0x89, 0xfe, 0x47, 0xae, 0x9f, 0x78, 0xe9, 0x64, 0x60, 0x87, 0xb7, 0x47, 0x6e, 0xe8,
+	0x86, 0x47, 0x74, 0x77, 0x92, 0xfe, 0x40, 0x23, 0x1a, 0xd0, 0x15, 0xab, 0xd2, 0x23, 0x50, 0x0c,
+	0x2b, 0x70, 0x62, 0xcf, 0xba, 0xc1, 0x26, 0xfe, 0x31, 0xc5, 0x71, 0x82, 0xba, 0x50, 0xf3, 0x1d,
+	0x55, 0x7c, 0x57, 0x7c, 0x7f, 0x6b, 0x28, 0x65, 0x7f, 0x1e, 0xd6, 0xce, 0x4f, 0xcd, 0x9a, 0xef,
+	0x20, 0x04, 0x75, 0xcf, 0x8a, 0x3d, 0xb5, 0x96, 0xef, 0x98, 0x74, 0x8d, 0x54, 0x68, 0xde, 0x61,
+	0x12, 0xfb, 0x61, 0xa0, 0x6e, 0xd0, 0xf4, 0x3c, 0x44, 0x5d, 0x90, 0x1c, 0x7c, 0xe7, 0xdb, 0x58,
+	0xad, 0xd3, 0x0d, 0x1e, 0xe9, 0x9f, 0x43, 0xbb, 0xd0, 0x31, 0x8e, 0xc2, 0x20, 0xc6, 0xe8, 0x03,
+	0xd8, 0xc4, 0x84, 0x8c, 0xed, 0xd0, 0xc1, 0xb4, 0xf1, 0xce, 0xf1, 0xce, 0x80, 0xea, 0x19, 0x9c,
+	0x11, 0x32, 0x0a, 0x1d, 0x6c, 0x36, 0x31, 0x5b, 0xe8, 0xdb, 0x20, 0x5f, 0xf9, 0x81, 0xcb, 0xc9,
+	0xea, 0x3b, 0xd0, 0x62, 0x21, 0x43, 0xd2, 0x09, 0x74, 0xbf, 0x49, 0x83, 0x00, 0x4f, 0xff, 0xb7,
+	0xac, 0x43, 0x90, 0xed, 0xa9, 0x8f, 0x83, 0x64, 0x5c, 0x50, 0x07, 0x2c, 0x65, 0xe4, 0x1a, 0x0f,
+	0x41, 0x4e, 0x28, 0x24, 0x3b, 0xc0, 0x74, 0x42, 0xc2, 0xbb, 0xc4, 0x9e, 0x7e, 0x0a, 0xbd, 0x4a,
+	0xcf, 0x37, 0x17, 0xf6, 0x28, 0x82, 0x72, 0x89, 0xef, 0x19, 0xd2, 0xab, 0x93, 0x46, 0x7b, 0xd0,
+	0xa0, 0x7f, 0x01, 0xfe, 0x3c, 0x2c, 0xc8, 0xcb, 0xf0, 0x4f, 0x51, 0x48, 0x92, 0xb1, 0xe5, 0x38,
+	0x44, 0x6d, 0xb0, 0x32, 0x96, 0x3a, 0x71, 0x1c, 0x82, 0xde, 0x83, 0x6d, 0x82, 0x5d, 0x3f, 0x4e,
+	0xc8, 0x03, 0x3b, 0x22, 0xd1, 0x23, 0xad, 0x79, 0x32, 0x3f, 0xa4, 0x8f, 0xa1, 0x5d, 0x50, 0xc2,
+	0xaf, 0xa2, 0xc4, 0x48, 0xac, 0x30, 0x2a, 0xde, 0x55, 0xed, 0xbf, 0xef, 0x2a, 0x00, 0x34, 0x9a,
+	0x86, 0x31, 0x7e, 0x4b, 0x97, 0xa5, 0x5b, 0xd0, 0x59, 0xe9, 0xf7, 0x0a, 0x92, 0x6e, 0x60, 0xf7,
+	0xda, 0x4b, 0x13, 0x27, 0xbc, 0x0f, 0x5e, 0x5f, 0xcf, 0x6f, 0x12, 0x34, 0x2f, 0x70, 0x1c, 0x5b,
+	0x2e, 0x46, 0x5f, 0x40, 0xdb, 0x9b, 0xff, 0x6f, 0xc7, 0x84, 0xb5, 0xa6, 0x4d, 0xe5, 0xe3, 0x1e,
+	0x27, 0x5b, 0xf6, 0x92, 0x21, 0x98, 0x8a, 0x57, 0xf6, 0xd7, 0x39, 0xa0, 0x22, 0x0e, 0xbb, 0x22,
+	0x4a, 0x4e, 0x3e, 0x56, 0xab, 0x40, 0x6c, 0xdf, 0x10, 0xcc, 0xb6, 0x57, 0x71, 0xcd, 0x77, 0xa0,
+	0x2e, 0xf8, 0x97, 0x99, 0x6d, 0x50, 0xc0, 0x77, 0x38, 0xe0, 0x7a, 0xaf, 0x1b, 0x82, 0xd9, 0x4d,
+	0xd6, 0x4f, 0x81, 0xef, 0xe1, 0x60, 0x0d, 0x34, 0x27, 0x5b, 0xa7, 0xd8, 0xda, 0x4b, 0xd8, 0x0b,
+	0xca, 0xbd, 0xe4, 0x05, 0xbb, 0x7f, 0x0a, 0xad, 0xc8, 0x0f, 0xdc, 0x05, 0xd9, 0x06, 0x05, 0x44,
+	0x1c, 0xb0, 0x30, 0xb7, 0x0c, 0xc1, 0x94, 0xa3, 0x65, 0x88, 0x3e, 0x83, 0x6d, 0x5e, 0xc8, 0xa9,
+	0x48, 0xb4, 0xb2, 0xb3, 0x52, 0xb9, 0xe8, 0xdf, 0x8a, 0x0a, 0x31, 0xfa, 0x12, 0x50, 0x80, 0xef,
+	0xc7, 0x5c, 0xd6, 0xbc, 0x75, 0x73, 0xe5, 0x05, 0xcb, 0x83, 0x25, 0x7f, 0xc1, 0xa0, 0x3c, 0x6c,
+	0xbe, 0x82, 0xce, 0x0a, 0x10, 0xa7, 0xb2, 0xb9, 0xf2, 0x84, 0x15, 0x63, 0xe7, 0x4f, 0x18, 0x54,
+	0xdc, 0x7e, 0x01, 0x7b, 0x76, 0xee, 0x98, 0x32, 0xad, 0x2d, 0x0a, 0x76, 0xc0, 0xc1, 0xaa, 0x26,
+	0x36, 0x04, 0x13, 0xd9, 0x55, 0x6b, 0x5f, 0xc1, 0x7e, 0x09, 0x8e, 0x93, 0x03, 0x8a, 0xd7, 0x5f,
+	0x87, 0xb7, 0xa0, 0xd7, 0xb1, 0xd7, 0x78, 0x77, 0x04, 0x4a, 0xcc, 0xfd, 0xb6, 0x20, 0x27, 0x53,
+	0xb0, 0x2e, 0x07, 0x2b, 0xd9, 0xd1, 0x10, 0xcc, 0xdd, 0x78, 0x35, 0x35, 0x94, 0xa0, 0x3e, 0x09,
+	0x9d, 0x87, 0x0f, 0x7f, 0x17, 0xa1, 0xc9, 0x1d, 0x8d, 0x76, 0x41, 0xe6, 0xcb, 0xcb, 0x74, 0x3a,
+	0x55, 0x04, 0xb4, 0x07, 0x0a, 0x4f, 0x0c, 0x2d, 0x67, 0x44, 0x5d, 0xaa, 0x88, 0x68, 0x1f, 0xda,
+	0xcb, 0xec, 0xb7, 0xec, 0xa3, 0xa9, 0xd4, 0xd0, 0x01, 0xec, 0x2f, 0xd3, 0x57, 0xf9, 0x4c, 0xfe,
+	0x9a, 0xe4, 0x33, 0x55, 0xd9, 0x40, 0x7d, 0xe8, 0x2e, 0xb7, 0xcc, 0xc2, 0xbc, 0x55, 0xea, 0xa8,
+	0x07, 0x9d, 0x79, 0xd3, 0xf0, 0x3a, 0xb5, 0x3d, 0x26, 0x56, 0x69, 0x14, 0xf0, 0x4e, 0xd3, 0x68,
+	0xea, 0xdb, 0x56, 0x82, 0x4f, 0xdc, 0x9c, 0x81, 0x84, 0x34, 0xe8, 0xf3, 0xad, 0xf3, 0x20, 0xc1,
+	0x24, 0xb0, 0xa6, 0xd7, 0x98, 0xdc, 0x61, 0x72, 0x46, 0x48, 0x48, 0x94, 0xe6, 0xf0, 0xe3, 0xc7,
+	0x99, 0x26, 0x3c, 0xcd, 0x34, 0xe1, 0x8f, 0x99, 0x26, 0x3c, 0xcf, 0x34, 0xf1, 0xe7, 0x4c, 0x13,
+	0x7f, 0xcd, 0x34, 0xf1, 0x31, 0xd3, 0xc4, 0xa7, 0x4c, 0x13, 0xff, 0xca, 0x34, 0xf1, 0x9f, 0x4c,
+	0x13, 0x9e, 0x33, 0x4d, 0xfc, 0xe5, 0x6f, 0x4d, 0x98, 0x48, 0xf4, 0x23, 0xf2, 0xc9, 0xbf, 0x01,
+	0x00, 0x00, 0xff, 0xff, 0x17, 0x87, 0xa3, 0x02, 0xa1, 0x08, 0x00, 0x00,
 }

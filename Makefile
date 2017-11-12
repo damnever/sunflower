@@ -10,7 +10,8 @@ pre-build:
 	mkdir -p bin
 
 protoc:
-	protoc --gofast_out=. -I=$(shell echo ${GOPATH} | tr -s ':' '\n' | head -n 1)/src/ -I=/usr/local/include/ -I=. msg/msgpb/msg.proto
+	# go get github.com/gogo/protobuf/protoc-gen-gogoslick
+	protoc --proto_path=$(shell go list -e -f '{{.Dir}}' github.com/damnever/sunflower)/vendor --proto_path=. --gogoslick_out=. msg/msgpb/msg.proto
 
 assets: npm-build
 	importPath=$$(go list -e -f "{{.ImportPath}}"); \
