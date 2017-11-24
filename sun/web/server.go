@@ -1,9 +1,11 @@
 package web
 
 import (
+	"expvar"
 	"fmt"
 	"mime"
 	"net/http"
+	"net/http/pprof"
 	"path/filepath"
 	"strings"
 
@@ -216,6 +218,28 @@ func (s *Server) registerSysAPIRouters() {
 	g.Use(s.adminChecker)
 
 	g.GET("/stats", s.stats)
+
+	for _, name := range []string{
+		"goroutine",
+		"heap",
+		"block",
+		"threadcreate",
+	} {
+		g.GET("/debug/pprof/"+name, echo.WrapHandler(pprof.Handler(name)))
+	}
+	g.Any("/debug/pprof/profile", func(c echo.Context) error {
+		pprof.Profile(c.Response().Writer, c.Request())
+		return nil
+	})
+	g.Any("/debug/pprof/symbol", func(c echo.Context) error {
+		pprof.Symbol(c.Response().Writer, c.Request())
+		return nil
+	})
+	g.Any("/debug/pprof/trace", func(c echo.Context) error {
+		pprof.Trace(c.Response().Writer, c.Request())
+		return nil
+	})
+	g.GET("/debug/vars", echo.WrapHandler(expvar.Handler()))
 }
 
 func newAuthError(format string, args ...interface{}) *echo.HTTPError {
