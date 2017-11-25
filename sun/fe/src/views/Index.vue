@@ -94,6 +94,12 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="Config" label-width="100px">
+          <el-select v-model="dlForm.config_type" auto-complete="off" size="small">
+            <el-option v-for="type in configTypes" :key="type" :label="type" :value="type">
+            </el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeDlDialog">Cancel</el-button>
@@ -124,6 +130,7 @@
           GOOS: "linux",
           GOARCH: "amd64",
           GOARM: "",
+          config_type: "systemd",
         },
         OSs: [
           {label: "Linux", value: "linux"},
@@ -131,6 +138,7 @@
           {label: "Windows", value: "windows"},
         ],
         armVersions: ["5", "6", "7"],
+        configTypes: ["systemd", "supervisord"],
       }
     },
     created () {
@@ -237,6 +245,7 @@
         this.dlForm.GOOS = "linux"
         this.dlForm.GOARCH = "amd64"
         this.dlForm.GOARM = ""
+        this.dlForm.config_type = "systemd"
       }
     }
   }

@@ -10,6 +10,8 @@ WorkingDirectory=/srv/sunflower
 Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/go/bin"
 # EnvironmentFile=/etc/environment
 ExecStart=/srv/sunflower/sun -c=sun.server.yaml
+ExecStop=/bin/kill -TERM $MAINPID
+TimeoutStopSec=10
 Restart=always
 
 [Install]

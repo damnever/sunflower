@@ -19,8 +19,9 @@ func (s *Server) download(c echo.Context) error {
 	os := c.QueryParam("GOOS")
 	arch := c.QueryParam("GOARCH")
 	arm := c.QueryParam("GOARM")
+	configType := c.QueryParam("config_type")
 
-	data, err := s.builder.TryGetPkg(user.targetName, ahash, os, arch, arm)
+	data, err := s.builder.TryGetPkg(user.targetName, ahash, os, arch, arm, configType)
 	if err != nil {
 		if err == errIsBuilding || err == errUnknown {
 			return newUserError(err.Error())

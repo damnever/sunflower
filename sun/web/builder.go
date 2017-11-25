@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sync/atomic"
+	"time"
 
 	"github.com/mholt/archiver"
 	"go.uber.org/zap"
@@ -21,7 +22,64 @@ import (
 	"github.com/damnever/sunflower/version"
 )
 
+// FIXME(damnever): shiiiit code..
+
+type supervisorConfig struct {
+	name string
+	data []byte
+	size int64
+}
+
+func (f *supervisorConfig) Name() string       { return f.name }
+func (f *supervisorConfig) Size() int64        { return f.size }
+func (f *supervisorConfig) Mode() os.FileMode  { return 0664 }
+func (f *supervisorConfig) ModTime() time.Time { return time.Now() }
+func (f *supervisorConfig) IsDir() bool        { return false }
+func (f *supervisorConfig) Sys() interface{}   { return nil }
+
 var (
+	systemd     = "systemd"
+	supervisord = "supervisord"
+	systemdConf = []byte(`# Edit path and place it in /etc/systemd/system
+# sudo systemctl enable flower.service
+# sudo systemctl start flower.service
+
+[Unit]
+Description=Sunflower Client
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+ExecStart=/path/to/flower # NOTE: EDIT IT
+ExecStop=/bin/kill -TERM $MAINPID
+TimeoutStopSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target`)
+	supervisordConf = []byte(`# Reference: http://supervisord.org/configuration.html
+[program:flower]
+command=/path/to/flower # NOTE: EDIT IT
+autostart=true
+autorestart=true
+startsecs=3
+startretries=3
+stopsignal=TERM
+stopwaitsecs=10
+user=www-data
+stdout_logfile=/var/log/flower/stdout.log  # NOTE: mkdir /var/log/flower
+stdout_logfile_maxbytes=2MB
+stdout_logfile_backups=5
+stderr_logfile=/var/log/flower/stderr.log
+stderr_logfile_maxbytes=2MB
+stderr_logfile_backups=5
+`)
+	supervisorConfigs = map[string]*supervisorConfig{
+		systemd:     &supervisorConfig{name: "flower.service", data: systemdConf, size: int64(len(systemdConf))},
+		supervisord: &supervisorConfig{name: "flower.conf", data: supervisordConf, size: int64(len(supervisordConf))},
+	}
 	tmpDir  = filepath.Join(util.TempDir(), "sunflower")
 	goPath  = filepath.Join(tmpDir, version.Full())
 	pkgPath = filepath.Join(goPath, "src/github.com/damnever/sunflower")
@@ -94,7 +152,7 @@ func NewBuilder(datadir string, agentConfig string) (*Builder, error) {
 	}, nil
 }
 
-func (b *Builder) TryGetPkg(username, ahash, os, arch, arm string) ([]byte, error) {
+func (b *Builder) TryGetPkg(username, ahash, os, arch, arm, supervisorType string) ([]byte, error) {
 	ext := ""
 	if os == "windows" {
 		ext = ".exe"
@@ -109,8 +167,8 @@ func (b *Builder) TryGetPkg(username, ahash, os, arch, arm string) ([]byte, erro
 		return nil, errIsBuilding
 	}
 
-	confData := fmt.Sprintf("id: %s\nhash: %s\n%s", username, ahash, b.agentConfig)
-	return zipBin(confData, binPath, binName)
+	agentConf := fmt.Sprintf("id: %s\nhash: %s\n%s", username, ahash, b.agentConfig)
+	return zipBin(agentConf, supervisorType, binPath, binName)
 }
 
 func (b *Builder) StartCrossPlatformBuild() {
@@ -176,13 +234,25 @@ func tryRestorePkgPath() error {
 	return archiver.Zip.Open(filepath.Join(pkgPath, "flower.zip"), pkgPath)
 }
 
-func zipBin(confData, binPath, binName string) ([]byte, error) {
+func zipBin(agentConf, supervisorType, binPath, binName string) ([]byte, error) {
 	/* zipBuf := bufpool.Get() */
 	/* defer bufpool.Put(zipBuf) */
 	// TODO(damnever): resuse the big buffer
 	zipBuf := new(bytes.Buffer)
 	// Zip writer for executable
 	zipw := zip.NewWriter(zipBuf)
+
+	// Supervisor config
+	sconf := supervisorConfigs[supervisorType]
+	scheader, err := zip.FileInfoHeader(sconf)
+	if err != nil {
+		return nil, err
+	}
+	scheader.Method = zip.Deflate
+	dconfw, err := zipw.CreateHeader(scheader)
+	if _, err := dconfw.Write(sconf.data); err != nil {
+		return nil, err
+	}
 
 	// Copy executable data into zip file
 	binf, err := os.Open(binPath)
@@ -209,18 +279,18 @@ func zipBin(confData, binPath, binName string) ([]byte, error) {
 		return nil, err
 	}
 
-	// Compress config data
+	// Compress agent config data
 	confBuf := bufpool.Get()
 	defer bufpool.Put(confBuf)
-	confZipW := zip.NewWriter(confBuf)
-	conff, err := confZipW.Create("flower.yaml")
+	aconfZipW := zip.NewWriter(confBuf)
+	aconff, err := aconfZipW.Create("flower.yaml")
 	if err != nil {
 		return nil, err
 	}
-	if _, err := conff.Write([]byte(confData)); err != nil {
+	if _, err := aconff.Write([]byte(agentConf)); err != nil {
 		return nil, err
 	}
-	if err := confZipW.Close(); err != nil {
+	if err := aconfZipW.Close(); err != nil {
 		return nil, err
 	}
 
@@ -232,4 +302,8 @@ func zipBin(confData, binPath, binName string) ([]byte, error) {
 		return nil, err
 	}
 	return zipBuf.Bytes(), nil
+}
+
+type supervisorConfigFileInfo struct {
+	typ string
 }
