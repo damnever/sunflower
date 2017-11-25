@@ -194,6 +194,7 @@ func (s *Server) registerAdminAPIRouters() {
 	g.PATCH("/:username", s.updateUser)
 	g.PUT("/:username", s.updateUser)
 	g.DELETE("/:username", s.deleteUser)
+	g.GET("/:username/tunnels", s.showAgentsAndTunnels)
 
 	g.GET("/:username/agents", s.showAgents)
 	g.DELETE("/:username/agents", s.deleteAgents)

@@ -40,7 +40,7 @@
 </template>
 
 <script>
-  import {breadcrumbs, user} from './g.js'
+  import {breadcrumbs, user, config} from './g.js'
   import {notifyErrResponse} from './utils.js'
 
   export default {
@@ -53,6 +53,7 @@
     created () {},
     beforeUpdate () {
       this.fetchUserInfo()
+      this.fetchConfig()
     },
     watch: {},
     methods: {
@@ -68,6 +69,18 @@
               user.isadmin = data.is_admin
               user.email = data.email
             }).catch((reason)=>{})
+          },
+          notifyErrResponse
+        )
+      },
+      fetchConfig () {
+        var that = this
+        that.$http.get("/api/config").then(
+          (response) => {
+            response.json().then((data) => {
+              config.domain = data.domain
+              config.ip = data.ip
+            }).catch((reason) => {})
           },
           notifyErrResponse
         )

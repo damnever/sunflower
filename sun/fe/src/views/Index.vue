@@ -43,7 +43,7 @@
       </el-table-column>
       <el-table-column prop="tag" label="Tag" sortable>
       </el-table-column>
-      <el-table-column label="Action" fixed="right" width="280px">
+      <el-table-column label="action" fixed="right" width="280px">
         <template slot-scope="scope">
           <el-button @click="deleteAgent(scope.row)"
             type="danger" size="mini" round>delete

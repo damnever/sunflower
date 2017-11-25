@@ -125,7 +125,7 @@
 </template>
 
 <script>
-  import {breadcrumbs, user} from '../g.js'
+  import {breadcrumbs, user, config} from '../g.js'
   import {notifyErrResponse} from '../utils.js'
 
   export default {
@@ -135,7 +135,7 @@
         hash: this.$route.params.ahash,
         tag: this.$route.params.etag,
         tunnels: [],
-        config: {},
+        config: config,
         qtag: "",
         loading: false,
         showDialog: false,
@@ -158,7 +158,6 @@
         name: "Agent: [" + tag + "]" + hash,
       })
       this.fetchTunnels()
-      this.fetchConfig()
     },
     methods: {
       searchTag () {
@@ -177,17 +176,6 @@
             that.loading = false
             notifyErrResponse(response)
           }
-        )
-      },
-      fetchConfig () {
-        var that = this
-        that.$http.get("/api/config").then(
-          (response) => {
-            response.json().then((data) => {
-              that.config = data
-            }).catch((reason) => {})
-          },
-          notifyErrResponse
         )
       },
       clickHash (hash, tag) {

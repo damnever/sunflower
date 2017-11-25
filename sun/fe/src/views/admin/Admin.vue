@@ -30,10 +30,13 @@
       </el-table-column>
       <el-table-column prop="created_at" label="CreatedAt" sortable>
       </el-table-column>
-      <el-table-column label="action">
+      <el-table-column label="action" fixed="right" width="180px">
         <template slot-scope="scope">
           <el-button @click.native.prevent="deleteUser(scope.row)"
             type="danger" size="mini" :disabled="scope.row.is_admin" round>delete
+          </el-button>
+          <el-button @click.native.prevent="clickDetails(scope.row.name)"
+            type="info" size="mini" round>details
           </el-button>
         </template>
       </el-table-column>
@@ -88,6 +91,12 @@
       this.fetchUsers()
     },
     methods: {
+      clickDetails(username) {
+        this.$router.push({
+          name: "Admin/Tunnels",
+          params: {username: username},
+        })
+      },
       fetchUsers () {
         var that = this
         that.loading = true

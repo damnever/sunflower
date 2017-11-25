@@ -55,6 +55,7 @@ func (db *DB) QueryUsers() ([]User, error) {
 	}
 	defer rows.Close()
 
+	// The slice is a pointer, no copy made no matter what the value type is.
 	users := []User{}
 	for rows.Next() {
 		var user User
@@ -63,6 +64,7 @@ func (db *DB) QueryUsers() ([]User, error) {
 		}
 		users = append(users, user)
 	}
+
 	return users, rows.Err()
 }
 

@@ -6,6 +6,7 @@ import Index from './views/Index.vue'
 import Agent from './views/Agent.vue'
 import Profile from './views/Profile.vue'
 import Admin from './views/admin/Admin.vue'
+import UserTunnels from './views/admin/Tunnels.vue'
 import Stats from './views/admin/Stats.vue'
 
 
@@ -38,11 +39,15 @@ const routes = [
     'component': Admin,
   },
   {
+    'name': 'Admin/Tunnels',
+    'path': '/:username/tunnels',
+    'component': UserTunnels,
+  },
+  {
     'name': 'Stats',
     'path': '/stats',
     'component': Stats,
   },
-
 ]
 
 const router = new VueRouter({

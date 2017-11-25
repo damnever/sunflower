@@ -98,3 +98,22 @@ func (s *Server) deleteUser(c echo.Context) error {
 	}
 	return c.NoContent(http.StatusOK)
 }
+
+// place it here for now..
+func (s *Server) showAgentsAndTunnels(c echo.Context) error {
+	user := c.Get(CtxUser).(userCtx)
+	agents, err := s.db.QueryAgents(user.targetName)
+	if err != nil {
+		return err
+	}
+
+	for i := range agents {
+		agent := &(agents[i])
+		tunnels, err := s.db.QueryTunnels(user.targetName, agent.Hash)
+		if err != nil {
+			return err
+		}
+		agent.Tunnels = tunnels
+	}
+	return c.JSON(http.StatusOK, agents)
+}

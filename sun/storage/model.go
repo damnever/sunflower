@@ -50,9 +50,11 @@ type Agent struct {
 	Tag       string    `json:"tag" db:"tag"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	Tunnels   []Tunnel  `json:"tunnels,omitempty" db:"-"`
 }
 
 type AgentForJSON Agent // Use alias to avoid infinite recursive.
+
 func (agent Agent) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&struct {
 		AgentForJSON
@@ -84,6 +86,7 @@ type Tunnel struct {
 }
 
 type TunnelForJSON Tunnel // Use alias to avoid infinite recursive.
+
 func (tunnel Tunnel) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&struct {
 		TunnelForJSON

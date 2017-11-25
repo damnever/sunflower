@@ -11,4 +11,10 @@ function User() {
   }
 }
 
+function Config() {
+  this.domain = ""
+  this.ip = ""
+}
+
 export var user = new User()
+export var config = new Config()
