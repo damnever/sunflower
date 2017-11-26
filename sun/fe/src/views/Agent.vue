@@ -21,7 +21,8 @@
 
     </el-row>
 
-    <el-table :data="tunnels" class="hundred-width table-margin-top" v-loading.body="loading">
+    <el-table :data="tunnels" class="hundred-width table-margin-top" v-loading.body="loading"
+      empty-text="No tunnels yet, click the plus button to create one!">
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">

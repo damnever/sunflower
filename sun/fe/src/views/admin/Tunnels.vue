@@ -1,9 +1,12 @@
 <template>
   <div>
     <span v-for="agent in agents" :key="agent.hash" v-loading.body="loading">
-      <h4>Agent #{{ agent.tag }} [{{ agent.hash }}] (delayed {{ agent.delayed }} on {{ agent.device }})</h4>
+      <div class="agent-info">
+        <span :class="agent.status === 'Connected' ? 'el-icon-success' : 'el-icon-error'"></span>
+        #{{ agent.tag }}[{{ agent.hash }}] (delayed {{ agent.delayed }} on {{ agent.device }})
+      </div>
       <!-- FIXME: dumplicated code - component -->
-      <el-table :data="agent.tunnels" class="hundred-width table-margin-top">
+      <el-table :data="agent.tunnels" class="hundred-width" empty-text="No tunnels yet">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
@@ -101,4 +104,10 @@
 </script>
 
 <style scoped>
+.agent-info {
+  color: #5A5E66;
+  font-size: 1.1em;
+  font-weight: 450;
+  margin: 2em 0 1em 0;
+}
 </style>

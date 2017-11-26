@@ -3,7 +3,7 @@
     <el-button type="text" v-for="name in pprofNames" :key="name">
       <a :href="'/api/sys/debug/pprof/' + name" target="_blank">{{ name }}</a>
     </el-button>
-    <el-button type="text" :key="name">
+    <el-button type="text">
       <a href="/api/sys/debug/vars" target="_blank">vars</a>
     </el-button>
     <div class="line"></div>

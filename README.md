@@ -1,13 +1,14 @@
 ## The most easy way to export your local port.
 
+http://sunflower.damnever.com is available for testing!
+
 NOTE:
 
 - There is currently no plan to support UDP.
 - You can use TCP to support the high level protocols those built on top of TCP, HTTP/1.x is a special case.
-- Only one connection per tunnel, don't worry, it wroks fine..
+- Only one connection per tunnel, don't worry, it works fine..
 - There are too many TODOs on front-end and..
-- Cross platform build is not working, also build it on Windows may have problems..
-- Optimizing memory usage, server side stats(gc, runtime, memery)..
+- Server side cross platform build is not working, also build it on Windows may have problems..
 - Anyway, get started now, the other things is not important..
 
 ### Quick Start
