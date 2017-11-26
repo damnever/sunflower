@@ -20,5 +20,5 @@ dist/
 bin/
 data/
 .DS_Store
-sun-linux.zip
+*.zip
 sun.server.yaml

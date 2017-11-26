@@ -1,5 +1,8 @@
 build: assets protoc sun
 
+release: sun
+	zip -r $(shell go env GOOS GOARCH | tr "\n" "-" | rev | cut -c 2- | rev).zip bin/sun etc/
+
 sun: pre-build
 	go build -o 'bin/sun' -ldflags '-X github.com/damnever/sunflower/version.Build=$(shell date +%Y_%m_%d_`date +%s`)' ./cmd/sun
 
