@@ -185,15 +185,15 @@ func (db *DB) DeleteAgents(username string) error {
 }
 
 func (db *DB) deleteAgentsByTxUserID(tx *sqlx.Tx, userID int64) error {
-	var agentIDs []int64
 	row := tx.QueryRowx("SELECT id FROM agent WHERE user_id=?", userID)
-	if err := row.Scan(&agentIDs); err != nil {
+	agentIDs, err := row.SliceScan()
+	if err != nil {
 		if IsNotExist(err) {
 			return nil
 		}
 		return err
 	}
-	if _, err := tx.Exec("DELETE FROM agent WHERE user_id=?", userID); err != nil {
+	if _, err = tx.Exec("DELETE FROM agent WHERE user_id=?", userID); err != nil {
 		return err
 	}
 

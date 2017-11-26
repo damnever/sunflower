@@ -81,7 +81,6 @@ message CloseTunnelResponse {
 message ShutdownRequest {
     string id = 1 [(gogoproto.customname) = "ID"];
     string client_hash = 2;
-    string tunnel_hash = 3;
 }
 
 

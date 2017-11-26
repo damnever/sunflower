@@ -127,7 +127,7 @@ func (c *CtlClient) handleEvent(evt *pubsub.Event) error {
 			TunnelHash: thash,
 		}
 	case pubsub.EventRejectAgent:
-		c.Out() <- &msgpb.ShutdownRequest{}
+		c.Out() <- &msgpb.ShutdownRequest{ID: id, ClientHash: ahash}
 		// XXX(damnever): better method to ensure message has been send.
 		time.Sleep(1 * time.Second)
 		return fmt.Errorf("reject self")
