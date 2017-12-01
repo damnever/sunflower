@@ -6,5 +6,6 @@ go:
     - 1.8
 
 script:
-    # TODO(testcases..)
+    - go test -v -race `go list ./... | egrep -v '/vendor/'`
+    - go build -o 'bin/flower' ./cmd/flower
     - make sun
