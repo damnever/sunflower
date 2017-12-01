@@ -2,7 +2,8 @@
 
 **NOTE**:
 
-- There is currently no plan to support UDP.
+- There is no plan to support UDP.
+- It is intend for personal use, any other features beyond this may not be accepted.
 - You can use TCP to support the high level protocols those built on top of TCP, HTTP/1.x is a special case.
 - Only one connection per tunnel, don't worry, it works fine..
 - There are too many TODOs on front-end and..

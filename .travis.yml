@@ -6,4 +6,5 @@ go:
     - 1.8
 
 script:
+    # TODO(testcases..)
     - make sun
