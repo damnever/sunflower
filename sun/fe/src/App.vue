@@ -27,14 +27,10 @@
         </el-col>
       </el-row>
     </div>
-    <div id="container">
-      <div id="content">
-        <el-col :span="18" :offset="3">
-          <router-view></router-view>
-        </el-col>
-      </div>
-    </div>
-    <div id="footer">
+    <div class="content">
+      <el-col :span="18" :offset="3">
+        <router-view></router-view>
+      </el-col>
     </div>
   </div>
 </template>
@@ -117,31 +113,8 @@
 </script>
 
 <style>
-  body {
-    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
-  }
-
-  html, body, #container {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
-
-  body > #container {
-    height: auto;
-    min-height: 100%;
-  }
-
-  #content {
+  .content {
     padding: 6.8em 0.4em;
-  }
-
-  #footer {
-    clear: both;
-    position: relative;
-    z-index: 10;
-    height: 60px;
-    margin-top: -60px;
   }
 
   .navbar {

@@ -189,12 +189,4 @@
   margin-top: .5em;
   margin-bottom: 1em;
 }
-a {
-  color: #58B7FF;
-  text-decoration: none;
-}
-a:hover {
-  color: #20A0FF;
-  text-decoration: underline;
-}
 </style>
