@@ -46,13 +46,13 @@ func Run() {
 	datadir := cconf.String("datadir")
 	datadir, err = filepath.Abs(datadir)
 	if err != nil {
-		logger.Fatal("Resolve absolute path(%s) failed: %v", datadir, err)
+		logger.Fatalf("Resolve absolute path(%s) failed: %v", datadir, err)
 	}
 	cconf.Set("datadir", datadir)
 	coreconf := buildCoreConfig(cconf)
 	_, port, err := net.SplitHostPort(coreconf.RPCConf.ListenAddr)
 	if err != nil {
-		logger.Fatal("Parse control address failed: %v", err)
+		logger.Fatalf("Parse control address failed: %v", err)
 	}
 	webconf := buildWebConfig(port, cconf)
 	cconf = nil

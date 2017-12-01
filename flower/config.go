@@ -69,7 +69,7 @@ func buildConfig(rawConf cc.Configer) *Config {
 	conf.Timeout.GracefulShutdown = timeoutC.DurationAndOr("graceful_timeout", "N>0", 3) * time.Second
 
 	controlC := timeoutC.Config("remote")
-	readVP := fmt.Sprintf("N>%d&&N>=3000", conf.HeartbeatInterval.Seconds()*float64(1000))
+	readVP := fmt.Sprintf("N>%d&&N>=3000", int(conf.HeartbeatInterval.Seconds()*float64(1000)))
 	conf.Timeout.Control = util.TimeoutConfig{
 		Connect: controlC.DurationAndOr("connect", "N>=500", 5000) * time.Millisecond,
 		Read:    controlC.DurationAndOr("read", readVP, 10000) * time.Millisecond,

@@ -188,7 +188,7 @@ func (b *Builder) StartCrossPlatformBuild() {
 
 	atomic.StoreInt32(&b.done, 1)
 	if err := os.RemoveAll(goPath); err != nil {
-		b.logger.Errorf("Remove %v failed: %v", err)
+		b.logger.Errorf("Remove %s failed: %v", goPath, err)
 	}
 	b.logger.Info("Cross platform build done")
 }
