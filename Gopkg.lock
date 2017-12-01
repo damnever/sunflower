@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/damnever/cc"
   packages = [".","rpn"]
-  revision = "aa427519a89381e6b78d30131cb43618fbad2a8c"
+  revision = "996309c958b37014466345df287f71dc976d5882"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -22,8 +22,8 @@
 [[projects]]
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
-  revision = "d2709f9f1f31ebcda9651b03077758c1f3a0018c"
-  version = "v3.0.0"
+  revision = "dbeaa9332f19a944acb5736b4456cfcc02140e29"
+  version = "v3.1.0"
 
 [[projects]]
   branch = "master"
@@ -34,14 +34,8 @@
 [[projects]]
   name = "github.com/gogo/protobuf"
   packages = ["gogoproto","proto","protoc-gen-gogo/descriptor"]
-  revision = "100ba4e885062801d56799d78530b73b178a78f3"
-  version = "v0.4"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/golang/protobuf"
-  packages = ["proto"]
-  revision = "11b8df160996e00fd4b55cbaafb3d84ec6d50fa8"
+  revision = "342cbe0a04158f6dcb03ca0079991a51a4248c02"
+  version = "v0.5"
 
 [[projects]]
   name = "github.com/gorilla/context"
@@ -65,7 +59,7 @@
   branch = "master"
   name = "github.com/hashicorp/yamux"
   packages = ["."]
-  revision = "d1caa6c97c9fc1cc9e83bbe34d0603f9ff0ce8bd"
+  revision = "f5742cb6b85602e7fa834e9d5d91a7d7fa850824"
 
 [[projects]]
   branch = "master"
@@ -77,7 +71,7 @@
   branch = "master"
   name = "github.com/jmoiron/sqlx"
   packages = [".","reflectx"]
-  revision = "d9bd385d68c068f1fabb5057e3dedcbcbb039d0f"
+  revision = "99f3ad6d85ae53d0fecf788ab62d0e9734b3c117"
 
 [[projects]]
   branch = "master"
@@ -88,8 +82,8 @@
 [[projects]]
   name = "github.com/labstack/echo"
   packages = [".","middleware"]
-  revision = "cec7629194fe4bf83b0c72d9a02d340c7a1468ac"
-  version = "3.2.3"
+  revision = "0473c51f1dbd83487effce00702571d19033a6e5"
+  version = "3.2.5"
 
 [[projects]]
   name = "github.com/labstack/echo-contrib"
@@ -100,8 +94,8 @@
 [[projects]]
   name = "github.com/labstack/gommon"
   packages = ["bytes","color","log","random"]
-  revision = "779b8a8b9850a97acba6a3fe20feb628c39e17c1"
-  version = "0.2.2"
+  revision = "57409ada9da0f2afad6664c49502f8c50fbd8476"
+  version = "0.2.3"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -112,14 +106,14 @@
 [[projects]]
   name = "github.com/mattn/go-isatty"
   packages = ["."]
-  revision = "fc9e8d8ef48496124e79ae0df75490096eccf6fe"
-  version = "v0.0.2"
+  revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
+  version = "v0.0.3"
 
 [[projects]]
   name = "github.com/mattn/go-sqlite3"
   packages = ["."]
-  revision = "ca5e3819723d8eeaf170ad510e7da1d6d2e94a08"
-  version = "v1.2.0"
+  revision = "ed69081a91fd053f17672236b0dd52ba7485e1a3"
+  version = "v1.4.0"
 
 [[projects]]
   name = "github.com/mholt/archiver"
@@ -131,7 +125,7 @@
   branch = "master"
   name = "github.com/nwaples/rardecode"
   packages = ["."]
-  revision = "f22b7ef81a0afac9ce1447d37e5ab8e99fbd2f73"
+  revision = "e06696f847aeda6f39a8f0b7cdff193b7690aef6"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -172,8 +166,8 @@
 [[projects]]
   name = "go.uber.org/atomic"
   packages = ["."]
-  revision = "4e336646b2ef9fc6e47be8e21594178f98e5ebcf"
-  version = "v1.2.0"
+  revision = "8474b86a5a6f79c443ce4b2992817ff32cf208b8"
+  version = "v1.3.1"
 
 [[projects]]
   name = "go.uber.org/multierr"
@@ -191,29 +185,29 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert","bcrypt","blowfish","ssh/terminal"]
-  revision = "7d9177d70076375b9a59c8fde23d52d9c4a7ecd5"
+  revision = "94eea52f7b742c7cbe0b03b22f0c4c8631ece122"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context"]
-  revision = "0744d001aa8470aaa53df28d32e5ceeb8af9bd70"
+  revision = "a8b9294777976932365dabb6640cf1468d95c70f"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
-  revision = "429f518978ab01db8bb6f44b66785088e7fba58b"
+  revision = "8b4580aae2a0dd0c231a45d3ccb8434ff533b840"
 
 [[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
+  revision = "287cf08546ab5e7e37d55a84f7ed3fd1db036de5"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5ee9796bebca692f66587908a7f5358241d03394c638c89bd1ffa81398e5a908"
+  inputs-digest = "18fee7620df7217344076081b90aaf005e00b130823e8ea1c52e7cd28a247a78"
   solver-name = "gps-cdcl"
   solver-version = 1
