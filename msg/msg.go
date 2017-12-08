@@ -12,6 +12,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// TODO(damnever): a better protocol implementation to reuse buffer.
+
 var (
 	ErrBadRequestType     = fmt.Errorf("bad request type")
 	ErrBadResponseType    = fmt.Errorf("bad response type")

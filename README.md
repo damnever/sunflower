@@ -5,8 +5,8 @@
 - There is no plan to support UDP.
 - It is intend for personal use, any other features beyond this may not be accepted.
 - You can use TCP to support the high level protocols those built on top of TCP, HTTP/1.x is a special case.
-- Only one connection per tunnel, don't worry, it works fine..
-- There are too many TODOs on front-end and..
+- Only one connection per tunnel, don't worry, it works fine(I have been using it for months)..
+- There are too many TODOs and..
 - Server side cross platform build is not working, also build it on Windows may have problems..
 - Code is dirty but works, anyway, get started now, the other things is not important..
 
