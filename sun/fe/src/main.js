@@ -10,11 +10,13 @@ Vue.config.errorHandler = (err, vm) => {
 import ElementUI from 'element-ui'
 import VueResource from 'vue-resource'
 import 'element-ui/lib/theme-chalk/index.css'
+import VueClipboard from 'vue-clipboard2'
 import App from './App.vue'
 import router from './router'
 
 
 Vue.use(ElementUI)
+Vue.use(VueClipboard)
 Vue.use(VueResource)
 Vue.http.options.emulateJSON = true;
 

@@ -53,13 +53,14 @@
       <el-table-column prop="export_addr" label="LocalAddr" sortable>
       </el-table-column>
       <el-table-column prop="server_addr" label="ServerAddr" sortable>
-        <!-- TODO -->
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" placement="top-start">
+          <el-tooltip class="item" effect="light" placement="top-start">
             <div slot="content">
-              Copy manually.. {{ scope.row.server_addr.replace("0.0.0.0", config.ip) }}<span v-if="scope.row.proto === 'HTTP'">.{{ config.domain }}</span>
+              Click to Copy: {{ scope.row.server_addr.replace("0.0.0.0", config.ip) }}<span v-if="scope.row.proto === 'HTTP'">.{{ config.domain }}</span>
             </div>
-            <el-tag type="info">{{ scope.row.server_addr.replace("0.0.0.0", "") }}</el-tag>
+            <el-button @click="copyAddr(scope.row.proto, scope.row.server_addr)"
+              icon="el-icon-view" size="mini" round>
+            </el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -263,6 +264,24 @@
           export_addr: "",
           server_addr: "",
         }
+      },
+      copyAddr (proto, addr) {
+        var txt = addr.replace("0.0.0.0", config.ip)
+        if (proto === 'HTTP') {
+          txt += '.' + config.domain
+        }
+        var that = this
+        this.$copyText(txt).then(function (e) {
+          that.$message({
+            message: 'Copy success',
+            type: 'success'
+          })
+        }, function (e) {
+          that.$message({
+            message: 'Copy failed',
+            type: 'error'
+          })
+        })
       }
     }
   }
