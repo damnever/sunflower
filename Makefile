@@ -13,8 +13,11 @@ pre-build:
 	mkdir -p bin
 
 protoc:
-	# go get github.com/gogo/protobuf/protoc-gen-gogoslick
-	protoc --proto_path=$(shell go list -e -f '{{.Dir}}' github.com/damnever/sunflower)/vendor --proto_path=. --gogoslick_out=. msg/msgpb/msg.proto
+	GO111MODULE=off go get -v github.com/gogo/protobuf/{gogoproto,proto,protoc-gen-gogo,protoc-gen-gogoslick}
+	# $(shell GO111MODULE=off go list -e -f '{{.Dir}}' github.com/gogo/protobuf)
+	protoc \
+		--proto_path=$(shell echo ${GOPATH} | tr -s ':' '\n' | head -n 1)/src:. \
+		--gogoslick_out=. msg/msgpb/msg.proto
 
 assets: npm-build
 	importPath=$$(go list -e -f "{{.ImportPath}}"); \
